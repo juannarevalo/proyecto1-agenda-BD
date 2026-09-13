@@ -103,6 +103,7 @@ CREATE TRIGGER trg_evitar_ciclo
 BEFORE INSERT OR UPDATE ON categorias
 FOR EACH ROW EXECUTE FUNCTION evitar_ciclo_categorias();
 
+set search_path TO prototipo, public;
 CREATE TABLE ubicaciones (
 	id_ubicacion SERIAL PRIMARY KEY,
 	nombre varchar(50) NOT NULL,
@@ -110,6 +111,6 @@ CREATE TABLE ubicaciones (
 	direccion varchar(200) NOT NULL,
 	capacidad int NOT NULL CHECK (capacidad>0)
 )
-
+DROP TABLE public.ubicaciones;
 
 
