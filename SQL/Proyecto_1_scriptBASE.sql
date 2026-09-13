@@ -111,6 +111,7 @@ CREATE TABLE ubicaciones (
 	direccion varchar(200) NOT NULL,
 	capacidad int NOT NULL CHECK (capacidad>0)
 )
-DROP TABLE public.ubicaciones;
+ALTER TABLE eventos add id_ubicacion INT REFERENCES ubicaciones(id_ubicacion) 
+
 
 
