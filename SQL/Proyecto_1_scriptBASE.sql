@@ -165,7 +165,8 @@ GROUP BY usuarios.nombre, tareas.estado
 ORDER BY COUNT(estado) DESC
 
 --RF 16- y RF-17 VIEW de tareas vencidas
-SELECT tareas.titulo, eventos.titulo, usuarios.nombre, tareas.fecha_limite, tareas.estado
+
+SELECT tareas.titulo AS titulo_tarea, eventos.titulo AS titulo_evento, usuarios.nombre, tareas.fecha_limite, tareas.estado
 FROM tareas
 JOIN eventos ON tareas.id_evento = eventos.id_evento
 JOIN usuarios ON tareas.id_usuario_responsable = usuarios.id_usuario
