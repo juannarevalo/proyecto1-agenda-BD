@@ -45,6 +45,7 @@ CREATE TABLE eventos (
     fecha_inicio TIMESTAMP NOT NULL,
     fecha_fin TIMESTAMP NOT NULL,
     CONSTRAINT check_fechas CHECK (fecha_fin > fecha_inicio)
+    
 );
 
 -- 5. Participación (RF05, RE01, RN01, RN05)
@@ -113,5 +114,23 @@ CREATE TABLE ubicaciones (
 )
 ALTER TABLE eventos add id_ubicacion INT REFERENCES ubicaciones(id_ubicacion) 
 
+CREATE OR REPLACE FUNCTION evitar_traslape()
+RETURNS TRIGGER AS $$
+BEGIN
+If EXISTS (SELECT 1 FROM eventos 
+    WHERE id_ubicacion = NEW.id_ubicacion
+    AND fecha_inicio < NEW.fecha_fin 
+    AND fecha_fin > NEW.fecha_inicio
+    AND id_evento != NEW.id_evento) THEN
+        RAISE EXCEPTION 'El evento se traslapa con otro evento existente.';
+        END IF;
+   
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_evitar_traslape
+BEFORE INSERT OR UPDATE ON eventos
+FOR EACH ROW EXECUTE FUNCTION evitar_traslape();
 
 
