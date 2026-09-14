@@ -162,7 +162,7 @@ SELECT COUNT(estado) AS cantidad, usuarios.nombre, tareas.estado
 FROM tareas
 JOIN usuarios ON tareas.id_usuario_responsable = usuarios.id_usuario
 WHERE estado IN ('Pendiente', 'En Progreso')
-GROUP BY usuarios.nombre, tareas.estado
+GROUP BY usuarios.id_usuario, usuarios.nombre, tareas.estado
 ORDER BY COUNT(estado) DESC
 
 --RF 16- y RF-17 VIEW de tareas vencidas
