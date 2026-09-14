@@ -156,10 +156,18 @@ CREATE TABLE tareas(
 	id_usuario_responsable INT NOT NULL REFERENCES usuarios(id_usuario),
 	id_evento INT NOT NULL REFERENCES eventos(id_evento)
 ) 
--- primera parte RF-16 y primera parte RF-17 Consultas de rendimiento 
+--RF-16 Y RF-17 VIEW de tareas pendientes
 SELECT COUNT(estado) AS cantidad, usuarios.nombre, tareas.estado 
 FROM tareas
 JOIN usuarios ON tareas.id_usuario_responsable = usuarios.id_usuario
 WHERE estado IN ('Pendiente', 'En Progreso')
 GROUP BY usuarios.nombre, tareas.estado
 ORDER BY COUNT(estado) DESC
+
+--RF 16- y RF-17 VIEW de tareas vencidas
+SELECT tareas.titulo, eventos.titulo, usuarios.nombre, tareas.fecha_limite, tareas.estado
+FROM tareas
+JOIN eventos ON tareas.id_evento = eventos.id_evento
+JOIN usuarios ON tareas.id_usuario_responsable = usuarios.id_usuario
+WHERE fecha_limite<NOW() 
+AND estado NOT IN ('Completado', 'Cancelada')
