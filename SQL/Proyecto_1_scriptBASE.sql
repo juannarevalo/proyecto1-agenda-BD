@@ -175,6 +175,12 @@ WHERE fecha_limite<NOW()
 AND estado NOT IN ('Completada', 'Cancelada');
 
 --MODULO 3 Disponibilidad
+
+CREATE TABLE catalogo_tipo_disponibilidad(
+	id_tipo SERIAL PRIMARY KEY,
+	nombre varchar(50) NOT NULL
+);
+
 CREATE TABLE disponibilidades (
 	id_disponibilidad SERIAL PRIMARY KEY,
 	fecha_correspondiente DATE NOT NULL,
@@ -185,8 +191,4 @@ CREATE TABLE disponibilidades (
 
 	CONSTRAINT check_hora CHECK (hora_inicio<hora_fin)
 	
-);
-CREATE TABLE catalogo_tipo_disponibilidad(
-	id_tipo SERIAL PRIMARY KEY,
-	nombre varchar(50) NOT NULL
 );
