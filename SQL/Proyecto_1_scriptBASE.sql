@@ -139,3 +139,18 @@ FROM eventos
 JOIN ubicaciones ON eventos.id_ubicacion = ubicaciones.id_ubicacion
 Group by ubicaciones.nombre
 ORDER BY Count(id_evento) DESC;
+
+-- MODULO 2 TAREAS ASOCIADAS A EVENTOS
+CREATE TABLE tareas(
+	id_tarea SERIAL PRIMARY KEY,
+	titulo varchar(50) NOT NULL,
+	descripcion text NULL,
+	prioridad varchar(20) NOT NULL 
+		CHECK (prioridad IN('Alta', 'Media', 'Baja')),
+	estado varchar(20) NOT NULL
+		DEFAULT 'Pendiente'
+		CHECK (estado IN ('Pendiente', 'Completada', 'En progreso', 'Cancelada')),
+	fecha_limite TIMESTAMP NOT NULL,
+	id_usuario_responsable INT NOT NULL REFERENCES usuarios(id_usuario),
+	id_evento INT NOT NULL REFERENCES eventos(id_evento)
+) 
