@@ -156,3 +156,10 @@ CREATE TABLE tareas(
 	id_usuario_responsable INT NOT NULL REFERENCES usuarios(id_usuario),
 	id_evento INT NOT NULL REFERENCES eventos(id_evento)
 ) 
+-- primera parte RF-16 y primera parte RF-17 Consultas de rendimiento 
+SELECT COUNT(estado) AS cantidad, usuarios.nombre, tareas.estado 
+FROM tareas
+JOIN usuarios ON tareas.id_usuario_responsable = usuarios.id_usuario
+WHERE estado IN ('Pendiente', 'En Progreso')
+GROUP BY usuarios.nombre, tareas.estado
+ORDER BY COUNT(estado) DESC
