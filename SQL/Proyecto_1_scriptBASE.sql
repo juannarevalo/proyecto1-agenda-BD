@@ -157,7 +157,7 @@ CREATE TABLE tareas(
 	id_evento INT NOT NULL REFERENCES eventos(id_evento)
 ) 
 --RF-16 Y RF-17 VIEW de tareas pendientes
-CREATE VIEW tareas_pendientes AS
+CREATE VIEW vista_tareas_pendientes AS
 SELECT COUNT(estado) AS cantidad, usuarios.nombre, tareas.estado 
 FROM tareas
 JOIN usuarios ON tareas.id_usuario_responsable = usuarios.id_usuario
@@ -166,7 +166,7 @@ GROUP BY usuarios.nombre, tareas.estado
 ORDER BY COUNT(estado) DESC
 
 --RF 16- y RF-17 VIEW de tareas vencidas
-CREATE VIEW tareas_vencidas AS
+CREATE VIEW vista_tareas_vencidas AS
 SELECT tareas.titulo AS titulo_tarea, eventos.titulo AS titulo_evento, usuarios.nombre, tareas.fecha_limite, tareas.estado
 FROM tareas
 JOIN eventos ON tareas.id_evento = eventos.id_evento
