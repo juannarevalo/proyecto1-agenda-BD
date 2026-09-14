@@ -133,4 +133,9 @@ CREATE TRIGGER trg_evitar_traslape
 BEFORE INSERT OR UPDATE ON eventos
 FOR EACH ROW EXECUTE FUNCTION evitar_traslape();
 
-
+CREATE VIEW ubicaciones_mas_utilizadas AS
+SELECT COUNT(id_evento), ubicaciones.nombre
+FROM eventos
+JOIN ubicaciones ON eventos.id_ubicacion = ubicaciones.id_ubicacion
+Group by ubicaciones.nombre
+ORDER BY Count(id_evento) DESC;
