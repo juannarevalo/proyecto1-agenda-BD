@@ -186,3 +186,7 @@ CREATE TABLE disponibilidades (
 	CONSTRAINT check_hora CHECK (hora_inicio<hora_fin)
 	
 );
+CREATE TABLE catalogo_tipo_disponibilidad(
+	id_tipo SERIAL PRIMARY KEY,
+	nombre varchar(50) NOT NULL
+);
