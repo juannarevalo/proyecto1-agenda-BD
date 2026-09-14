@@ -104,7 +104,7 @@ CREATE TRIGGER trg_evitar_ciclo
 BEFORE INSERT OR UPDATE ON categorias
 FOR EACH ROW EXECUTE FUNCTION evitar_ciclo_categorias();
 
-set search_path TO prototipo, public;
+--RF-08: Tabla ubicaciones y relación con eventos
 CREATE TABLE ubicaciones (
 	id_ubicacion SERIAL PRIMARY KEY,
 	nombre varchar(50) NOT NULL,
@@ -114,6 +114,7 @@ CREATE TABLE ubicaciones (
 )
 ALTER TABLE eventos add id_ubicacion INT REFERENCES ubicaciones(id_ubicacion) 
 
+-- RF-09: Evitar traslape de eventos en la misma ubicación
 CREATE OR REPLACE FUNCTION evitar_traslape()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -133,6 +134,7 @@ CREATE TRIGGER trg_evitar_traslape
 BEFORE INSERT OR UPDATE ON eventos
 FOR EACH ROW EXECUTE FUNCTION evitar_traslape();
 
+--RF-10: Ubicaciones más utilizadas
 CREATE VIEW ubicaciones_mas_utilizadas AS
 SELECT COUNT(id_evento), ubicaciones.nombre
 FROM eventos
