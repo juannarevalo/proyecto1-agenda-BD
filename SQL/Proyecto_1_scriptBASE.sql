@@ -175,7 +175,7 @@ WHERE fecha_limite<NOW()
 AND estado NOT IN ('Completada', 'Cancelada');
 
 --MODULO 3 Disponibilidad
-
+-- RF-11
 CREATE TABLE catalogo_tipo_disponibilidad(
 	id_tipo SERIAL PRIMARY KEY,
 	nombre varchar(50) NOT NULL
