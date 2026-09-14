@@ -158,18 +158,18 @@ CREATE TABLE tareas(
 ) 
 --RF-16 Y RF-17 VIEW de tareas pendientes
 CREATE VIEW vista_tareas_pendientes AS
-SELECT COUNT(estado) AS cantidad, usuarios.nombre, tareas.estado 
+SELECT COUNT(estado) AS cantidad, usuarios.nombre, usuarios.apellido, estado 
 FROM tareas
 JOIN usuarios ON tareas.id_usuario_responsable = usuarios.id_usuario
 WHERE estado IN ('Pendiente', 'En Progreso')
-GROUP BY usuarios.id_usuario, usuarios.nombre, tareas.estado
-ORDER BY COUNT(estado) DESC
+GROUP BY usuarios.id_usuario, usuarios.nombre, usuarios.apellido, tareas.estado
+ORDER BY COUNT(estado) DESC;
 
 --RF 16- y RF-17 VIEW de tareas vencidas
 CREATE VIEW vista_tareas_vencidas AS
-SELECT tareas.titulo AS titulo_tarea, eventos.titulo AS titulo_evento, usuarios.nombre, tareas.fecha_limite, tareas.estado
+SELECT tareas.titulo AS titulo_tareas, eventos.titulo AS titulo_evento, usuarios.nombre, usuarios.apellido, tareas.fecha_limite, tareas.estado
 FROM tareas
 JOIN eventos ON tareas.id_evento = eventos.id_evento
 JOIN usuarios ON tareas.id_usuario_responsable = usuarios.id_usuario
 WHERE fecha_limite<NOW() 
-AND estado NOT IN ('Completado', 'Cancelada')
+AND estado NOT IN ('Completada', 'Cancelada');
