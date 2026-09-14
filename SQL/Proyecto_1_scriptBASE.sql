@@ -173,3 +173,16 @@ JOIN eventos ON tareas.id_evento = eventos.id_evento
 JOIN usuarios ON tareas.id_usuario_responsable = usuarios.id_usuario
 WHERE fecha_limite<NOW() 
 AND estado NOT IN ('Completada', 'Cancelada');
+
+--MODULO 3 Disponibilidad
+CREATE TABLE disponibilidades (
+	id_disponibilidad SERIAL PRIMARY KEY,
+	fecha_correspondiente DATE NOT NULL,
+	hora_inicio TIME NOT NULL,
+	hora_fin TIME NOT NULL,
+	id_tipo INT NOT NULL REFERENCES catalogo_tipo_disponibilidad(id_tipo),
+	id_usuario INT NOT NULL REFERENCES usuarios(id_usuario),
+
+	CONSTRAINT check_hora CHECK (hora_inicio<hora_fin)
+	
+);
