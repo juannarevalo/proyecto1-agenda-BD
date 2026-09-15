@@ -972,26 +972,24 @@ class AppAgenda(ctk.CTk):
                 return
             texto = "Tareas Pendientes por usuario\n\n"
             for row in rows:
-                texto += f"{row[1]} - {row[0]}\n"
+                texto += f"{row[1]} {row[2]} - {row[0]} tareas ({row[3]})\n"
             messagebox.showinfo("Tareas pendientes", texto)
         except Exception as e:
             messagebox.showerror("Error", str(e)) 
 
-    def cargar_datos_ubicaciones(self):
+    def tareas_vencidas(self): #
         try:
             rows = self.ejecutar_consulta(
-                "SELECT id_ubicacion, nombre, ciudad, direccion, capacidad FROM ubicaciones ORDER BY nombre",
-                fetch=True
-            )
-            for item in self.tree_ubicaciones.get_children():
-                self.tree_ubicaciones.delete(item)
-            self.ubicaciones_combo = {}
+                "SELECT * FROM vista_tareas_vencidas", fetch=True)
+            if not rows:
+                messagebox.showinfo("Tareas vencidas", "No hay tareas vencidas.")
+                return
+            texto = "Tareas Vencidas por usuario\n\n"
             for row in rows:
-                self.tree_ubicaciones.insert("", "end", values=(row[0], row[1], row[2], row[3], row[4]))
-                etiqueta = f"{row[1]} — #{row[0]}"
-                self.ubicaciones_combo[etiqueta] = row[0]
+                fecha=
+            messagebox.showinfo("Tareas vencidas", texto)
         except Exception as e:
-            print(f"Error cargando ubicaciones: {e}")
+            messagebox.showerror("Error", str(e))
 
     def ver_historico_eventos(self):
         uid = self.ubicacion_seleccionada_id()
