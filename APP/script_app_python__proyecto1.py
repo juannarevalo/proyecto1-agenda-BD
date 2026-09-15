@@ -708,7 +708,7 @@ class AppAgenda(ctk.CTk):
                     except Exception as e:
                         messagebox.showerror("Error", str(e))
 
-        def eliminar_ubicacion(self):
+    def eliminar_ubicacion(self):
                     uid = self.ubicacion_seleccionada_id()
                     if uid is None:
                         return messagebox.showwarning("Selección requerida", "Selecciona una ubicación.")
@@ -720,8 +720,8 @@ class AppAgenda(ctk.CTk):
                         messagebox.showinfo("Eliminado", "Ubicación eliminada.")
                     except Exception as e:
                         messagebox.showerror("No se pudo eliminar", str(e))
-            
-        def generar_ranking_ubicaciones(self):
+        
+    def generar_ranking_ubicaciones(self):
                     try:
                         rows = self.ejecutar_consulta(
                             "SELECT * FROM ubicaciones_mas_utilizadas",
