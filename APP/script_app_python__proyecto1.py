@@ -875,7 +875,7 @@ class AppAgenda(ctk.CTk):
         if not sel:
             return
         vals = self.tree_tareas.item(sel[0])["values"]
-        self.entry_tarea_nombre.delete(0, tk.END); self.entry_tarea_nombre.insert(0, vals[1])
+        self.entry_tarea_titulo.delete(0, tk.END); self.entry_tarea_titulo.insert(0, vals[1])
         self.combo_tarea_evento.set(vals[2])
         self.combo_tarea_responsable.set(vals[3])
         self.combo_tarea_prioridad.set(vals[4])
@@ -887,12 +887,15 @@ class AppAgenda(ctk.CTk):
         except ValueError:
             pass
 
-    def limpiar_form_ubicacion(self):
-        self.tree_ubicaciones.selection_remove(self.tree_ubicaciones.selection())
-        self.entry_ubi_nombre.delete(0, tk.END)
-        self.entry_ubi_ciudad.delete(0, tk.END)
-        self.entry_ubi_direccion.delete(0, tk.END)
-        self.entry_ubi_capacidad.delete(0, tk.END)
+    def limpiar_form_tarea(self):
+        self.tree_tareas.selection_remove(self.tree_tareas.selection())
+        self.entry_tarea_titulo.delete(0, tk.END)
+        self.combo_tarea_evento.set("")
+        self.combo_tarea_responsable.set("")
+        self.combo_tarea_prioridad.set("")
+        self.combo_tarea_estado.set("")
+        self.fecha_limite.set_date(None)
+        self.hora_limite.delete(0, tk.END)
 
     def agregar_ubicacion(self):
         nombre = self.entry_ubi_nombre.get().strip()
