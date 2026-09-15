@@ -608,6 +608,47 @@ class AppAgenda(ctk.CTk):
         except Exception as e:
             print(f"Error cargando eventos: {e}")
 
+
+    # -------------------- UBICACIONES MODULO 1 --------------------
+    def configurar_pestana_ubicaciones(self):
+            self.crear_encabezado(self.tab_ubicaciones, "Ubicaciones", "Administra los lugares fisicos donde se realizan los eventos.")
+    
+            cuerpo = ctk.CTkFrame(self.tab_ubicaciones, fg_color="transparent")
+            cuerpo.pack(fill="both", expand=True, padx=10, pady=5)
+            cuerpo.grid_columnconfigure(0, weight=3)
+            cuerpo.grid_columnconfigure(1, weight=1)
+            cuerpo.grid_rowconfigure(0, weight=1)
+    
+            tabla_frame = ctk.CTkFrame(cuerpo)
+            tabla_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 8))
+            form = ctk.CTkScrollableFrame(cuerpo, width=300)
+            form.grid(row=0, column=1, sticky="nsew")
+    
+            self.tree_ubicaciones = self.crear_treeview(
+                tabla_frame, ("ID", "Nombre", "Ciudad", "Dirección", "Capacidad"),
+                (70, 160, 160, 160, 80)
+            )
+            self.tree_ubicaciones.bind("<<TreeviewSelect>>", self.cargar_ubicacion_seleccionada)
+    
+            ctk.CTkLabel(form, text="Formulario de ubicación", font=ctk.CTkFont(size=16, weight="bold")).pack(pady=(10, 15))
+            self.entry_ubi_nombre = ctk.CTkEntry(form, placeholder_text="Nombre")
+            self.entry_ubi_nombre.pack(fill="x", padx=10, pady=6)
+            self.entry_ubi_ciudad = ctk.CTkEntry(form, placeholder_text="Ciudad")
+            self.entry_ubi_ciudad.pack(fill="x", padx=10, pady=6)
+            self.entry_ubi_direccion = ctk.CTkEntry(form, placeholder_text="Dirección")
+            self.entry_ubi_direccion.pack(fill="x", padx=10, pady=6)
+            self.entry_ubi_capacidad = ctk.CTkEntry(form, placeholder_text="Capacidad")
+            self.entry_ubi_capacidad.pack(fill="x", padx=10, pady=6)
+
+            self.switch_usuario_activo = ctk.CTkSwitch(form, text="Usuario activo")
+            self.switch_usuario_activo.select()
+            self.switch_usuario_activo.pack(anchor="w", padx=12, pady=10)
+    
+            ctk.CTkButton(form, text="➕ Registrar usuario", command=self.agregar_usuario).pack(fill="x", padx=10, pady=(12, 5))
+            ctk.CTkButton(form, text="💾 Actualizar seleccionado", command=self.actualizar_usuario).pack(fill="x", padx=10, pady=5)
+            ctk.CTkButton(form, text="🧹 Nuevo / Limpiar", command=self.limpiar_form_usuario, fg_color="gray").pack(fill="x", padx=10, pady=5)
+            ctk.CTkButton(form, text="🗑️ Eliminar seleccionado", command=self.eliminar_usuario, fg_color="#b33939", hover_color="#8f2d2d").pack(fill="x", padx=10, pady=5)
+
     # -------------------- REFRESCO GENERAL --------------------
 
     def actualizar_todas_las_tablas(self): 
