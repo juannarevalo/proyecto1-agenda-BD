@@ -855,16 +855,16 @@ class AppAgenda(ctk.CTk):
                 ctk.CTkButton(form, text="💾 Actualizar seleccionada", command=self.actualizar_tarea).pack(fill="x", padx=10, pady=5)
                 ctk.CTkButton(form, text="🧹 Nueva / Limpiar", command=self.limpiar_form_tarea, fg_color="gray").pack(fill="x", padx=10, pady=5)
                 ctk.CTkButton(form, text="🗑️ Eliminar seleccionada", command=self.eliminar_tarea, fg_color="#b33939", hover_color="#8f2d2d").pack(fill="x", padx=10, pady=5)
-    
+
+                self.limpiar_form_tarea()
     
                 #Boton de reporte de tareas pendientes
                 ctk.CTkButton(form, text="Tareas pendientes", command=self.tareas_pendientes).pack(fill="x", padx=10, pady=(12, 5))
                 #Boton de reporte de tareas vencidas
                 ctk.CTkButton(form, text="Tareas vencidas", command=self.tareas_vencidas).pack(fill="x", padx=10, pady=(12, 5))
     
-         #Definicion de funciones CRUD para TAREAS
+    #Definicion de funciones CRUD para TAREAS
 
-    
     def tarea_seleccionada_id(self):
         sel = self.tree_tareas.selection()
         return self.tree_tareas.item(sel[0])["values"][0] if sel else None
@@ -898,7 +898,6 @@ class AppAgenda(ctk.CTk):
         self.establecer_fecha(self.fecha_tarea_limite, hoy)
         self.hora_tarea_limite.delete(0, tk.END); self.hora_tarea_limite.insert(0, "17:00")
 
-        self.limpiar_form_tarea()
 
     def agregar_tarea(self):
         titulo = self.entry_tarea_titulo.get().strip()
@@ -992,29 +991,7 @@ class AppAgenda(ctk.CTk):
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    def ver_historico_eventos(self):
-        uid = self.ubicacion_seleccionada_id()
-        if uid is None:
-            return messagebox.showwarning("Selección requerida", "Selecciona una ubicación de la tabla primero.")
-        try:
-            rows = self.ejecutar_consulta("""
-                SELECT eventos.titulo, eventos.fecha_inicio, eventos.fecha_fin,
-                   usuarios.nombre, usuarios.apellido
-                FROM eventos
-                JOIN usuarios ON eventos.id_usuario_propietario = usuarios.id_usuario
-                WHERE eventos.id_ubicacion = %s
-                ORDER BY eventos.fecha_inicio DESC
-            """, (uid,), fetch=True)
-            if not rows:
-                return messagebox.showinfo("Histórico", "No hay eventos registrados en esta ubicación.")
-            texto = "📋 HISTÓRICO DE EVENTOS\n\n"
-            for row in rows:
-                inicio = row[1].strftime("%Y-%m-%d %H:%M") if hasattr(row[1], "strftime") else row[1]
-                fin = row[2].strftime("%Y-%m-%d %H:%M") if hasattr(row[2], "strftime") else row[2]
-                texto += f"• {row[0]}\n  Propietario: {row[3]} {row[4]}\n  {inicio} → {fin}\n\n"
-            messagebox.showinfo("Histórico de eventos en ubicación", texto)
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
+    
  
 
 
