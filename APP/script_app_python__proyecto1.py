@@ -613,6 +613,8 @@ class AppAgenda(ctk.CTk):
 
             valores_u = ["Seleccione un usuario"] + list(self.usuarios_combo.keys())
             valores_c = ["Seleccione una categoría"] + list(self.categorias_combo.keys())
+            valores_ubi = ["Sin ubicación"] + list(self.ubicaciones_combo.keys())  # Se crea la lista con las ubicaciones que el usuario creo
+            self.combo_ev_ubicacion.configure(values=valores_ubi)  # Se agregan las ubicaciones al dropdown de ubicaciones
             self.combo_ev_usuario.configure(values=valores_u)
             self.combo_ev_categoria.configure(values=valores_c)
         except Exception as e:
