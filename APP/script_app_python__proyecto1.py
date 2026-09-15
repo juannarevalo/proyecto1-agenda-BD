@@ -130,6 +130,9 @@ class AppAgenda(ctk.CTk):
             ("Usuarios", "👥"),
             ("Categorías", "📁"),
             ("Eventos", "🗓️"),
+            ("Ubicaciones", "📍")
+            ("Tareas", "✅")
+            ("Disponibilidad", "⏰")
         ], start=2):
             btn = ctk.CTkButton(
                 self.sidebar_frame, text=f"{icono}  {nombre}",
