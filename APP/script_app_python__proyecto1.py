@@ -179,8 +179,8 @@ class AppAgenda(ctk.CTk):
         self.configurar_pestana_categorias()
         self.configurar_pestana_eventos()
         self.configurar_pestana_ubicaciones()
-        self.configurar_pestana_tareas()
-        self.configurar_pestana_disponibilidad()
+        #self.configurar_pestana_tareas()
+        #self.configurar_pestana_disponibilidad()
         self.seleccionar_modulo("Usuarios")
 
     def al_cambiar_pestana(self):
@@ -650,6 +650,9 @@ class AppAgenda(ctk.CTk):
 
             #Boton de reporte de ranking de ubicaciones
             ctk.CTkButton(form, text="📊 Generar ranking de ubicaciones", command=self.generar_ranking_ubicaciones).pack(fill="x", padx=10, pady=(12, 5))
+            #Boton de reporte de historicos n
+            ctk.CTkButton(form, text="📈 Ver historico de eventos", command=self.ver_historico_eventos).pack(fill="x", padx=10, pady=(12, 5))
+
 
             #Definicion de funciones CRUD para ubicaciones
     def ubicacion_seleccionada_id(self):
@@ -758,8 +761,8 @@ class AppAgenda(ctk.CTk):
         self.cargar_datos_categorias()
         self.cargar_datos_eventos()
         self.cargar_datos_ubicaciones() ## Se incluyeron las nuevas funciones para recargar datos 
-        self.cargar_datos_tareas()
-        self.cargar_datos_disponibilidad()
+        #self.cargar_datos_tareas()
+        #self.cargar_datos_disponibilidad()
 
 
 if __name__ == "__main__":
