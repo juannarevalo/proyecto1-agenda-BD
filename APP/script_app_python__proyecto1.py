@@ -656,35 +656,39 @@ class AppAgenda(ctk.CTk):
                     sel = self.tree_ubicaciones.selection()
                     return self.tree_ubicaciones.item(sel[0])["values"][0] if sel else None
             
-                def cargar_usuario_seleccionado(self, _=None):
-                    sel = self.tree_usuarios.selection()
+                def cargar_ubicacion_seleccionada(self, _=None):
+                    sel = self.tree_ubicaciones.selection()
                     if not sel:
                         return
-                    vals = self.tree_usuarios.item(sel[0])["values"]
-                    self.entry_nombre.delete(0, tk.END); self.entry_nombre.insert(0, vals[1])
-                    self.entry_apellido.delete(0, tk.END); self.entry_apellido.insert(0, vals[2])
-                    if vals[4]:
-                        self.switch_usuario_activo.select()
-                    else:
-                        self.switch_usuario_activo.deselect()
+                    vals = self.tree_ubicaciones.item(sel[0])["values"]
+                    self.entry_ubi_nombre.delete(0, tk.END); self.entry_ubi_nombre.insert(0, vals[1])
+                    self.entry_ubi_ciudad.delete(0, tk.END); self.entry_ubi_ciudad.insert(0, vals[2])
+                    self.entry_ubi_direccion.delete(0, tk.END); self.entry_ubi_direccion.insert(0, vals[3])
+                    self.entry_ubi_capacidad.delete(0, tk.END); self.entry_ubi_capacidad.insert(0, vals[4])
+                    
             
-                def limpiar_form_usuario(self):
-                    self.tree_usuarios.selection_remove(self.tree_usuarios.selection())
-                    self.entry_nombre.delete(0, tk.END)
-                    self.entry_apellido.delete(0, tk.END)
+                def limpiar_form_ubicacion(self):
+                    self.tree_ubicaciones.selection_remove(self.tree_ubicaciones.selection())
+                    self.entry_ubi_nombre.delete(0, tk.END)
+                    self.entry_ubi_ciudad.delete(0, tk.END)
+                    self.entry_ubi_direccion.delete(0, tk.END)
+                    self.entry_ubi_capacidad.delete(0, tk.END)
                     self.switch_usuario_activo.select()
             
-                def agregar_usuario(self):
-                    nombre, apellido = self.entry_nombre.get().strip(), self.entry_apellido.get().strip()
-                    if not nombre or not apellido:
-                        return messagebox.showwarning("Campos incompletos", "Indica nombre y apellido.")
+                def agregar_ubicacion(self):
+                    nombre, ciudad, direccion, capacidad = (self.entry_ubi_nombre.get().strip(),
+                                                            self.entry_ubi_ciudad.get().strip(),
+                                                            self.entry_ubi_direccion.get().strip(),
+                                                            self.entry_ubi_capacidad.get().strip())
+                    if not nombre or not ciudad or not direccion or not capacidad:
+                        return messagebox.showwarning("Campos incompletos", "Indica todos los campos de la ubicación.")
                     try:
-                        self.ejecutar_consulta("INSERT INTO usuarios (nombre, apellido, activo) VALUES (%s, %s, %s)",
-                                               (nombre, apellido, self.switch_usuario_activo.get() == 1))
-                        self.limpiar_form_usuario(); self.actualizar_todas_las_tablas()
-                        messagebox.showinfo("Éxito", "Usuario registrado correctamente.")
+                        self.ejecutar_consulta("INSERT INTO ubicaciones (nombre, ciudad, direccion, capacidad) VALUES (%s, %s, %s, %s)",
+                                               (nombre, ciudad, direccion, int(capacidad))) 
+                        self.limpiar_form_ubicacion(); self.actualizar_todas_las_tablas()
+                        messagebox.showinfo("Éxito", "Ubicación registrada correctamente.")
                     except Exception as e:
-                        messagebox.showerror("Error de base de datos", str(e))
+                        messagebox.showerror("Error", str(e))
             
                 def actualizar_usuario(self):
                     uid = self.usuario_seleccionado_id()
