@@ -834,12 +834,12 @@ class AppAgenda(ctk.CTk):
 
                 ctk.CTkLabel(form, text="Prioridad").pack(anchor="w", padx=10, pady=(8, 2))
                 self.combo_tarea_prioridad = ctk.CTkComboBox(form, values=["Alta", "Media", "Baja"], state="readonly")
-                self.combo_tarea_prioridad.set("Seleccione prioridad")
+                self.combo_tarea_prioridad.set("Media")
                 self.combo_tarea_prioridad.pack(fill="x", padx=10, pady=4)
 
                 ctk.CTkLabel(form, text="Estado").pack(anchor="w", padx=10, pady=(8, 2))
                 self.combo_tarea_estado = ctk.CTkComboBox(form, values=["Pendiente", "En progreso", "Completada"], state="readonly")
-                self.combo_tarea_estado.set("Seleccione estado")
+                self.combo_tarea_estado.set("Pendiente")
                 self.combo_tarea_estado.pack(fill="x", padx=10, pady=4)
 
                 ctk.CTkLabel(form, text="Fecha límite").pack(anchor="w", padx=10, pady=(8, 2))
@@ -890,19 +890,26 @@ class AppAgenda(ctk.CTk):
     def limpiar_form_tarea(self):
         self.tree_tareas.selection_remove(self.tree_tareas.selection())
         self.entry_tarea_titulo.delete(0, tk.END)
-        self.combo_tarea_evento.set("")
-        self.combo_tarea_responsable.set("")
-        self.combo_tarea_prioridad.set("")
-        self.combo_tarea_estado.set("")
-        self.fecha_limite.set_date(None)
-        self.hora_limite.delete(0, tk.END)
+        self.combo_tarea_evento.set("Seleccione un evento")
+        self.combo_tarea_responsable.set("Seleccione un usuario")
+        self.combo_tarea_prioridad.set("Media")
+        self.combo_tarea_estado.set("Pendiente")
+        hoy = datetime.now()
+        self.establecer_fecha(self.fecha_tar_limite, hoy)
+        self.hora_tar_limite.delete(0, tk.END); self.hora_tar_limite.insert(0, "17:00")
 
-    def agregar_ubicacion(self):
-        nombre = self.entry_ubi_nombre.get().strip()
-        ciudad = self.entry_ubi_ciudad.get().strip()
-        direccion = self.entry_ubi_direccion.get().strip()
-        capacidad = self.entry_ubi_capacidad.get().strip()
-        if not nombre or not ciudad or not direccion or not capacidad:
+    def agregar_tarea(self):
+        titulo = self.entry_tarea_titulo.get().strip()
+        evento = self.combo_tarea_evento.get()
+        responsable = self.combo_tarea_responsable.get()
+        prioridad = self.combo_tarea_prioridad.get()
+        estado = self.combo_tarea_estado.get()
+        fecha_limite = self.fecha_limite.get_date()
+        hora_limite = self.hora_limite.get()
+
+        if not titulo or not evento or not responsable or not prioridad or not estado or not fecha_limite or not hora_limite:
+            return messagebox.showwarning("Campos incompletos", "Indica todos los campos de la tarea.")
+
             return messagebox.showwarning("Campos incompletos", "Indica todos los campos de la ubicación.")
         try:
             self.ejecutar_consulta(
