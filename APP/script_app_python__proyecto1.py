@@ -610,10 +610,13 @@ class AppAgenda(ctk.CTk):
 
     # -------------------- REFRESCO GENERAL --------------------
 
-    def actualizar_todas_las_tablas(self):
+    def actualizar_todas_las_tablas(self): 
         self.cargar_datos_usuarios()
         self.cargar_datos_categorias()
         self.cargar_datos_eventos()
+        self.cargar_datos_ubicaciones() ## Se incluyeron las nuevas funciones para recargar datos 
+        self.cargar_datos_tareas()
+        self.cargar_datos_disponibilidad()
 
 
 if __name__ == "__main__":
