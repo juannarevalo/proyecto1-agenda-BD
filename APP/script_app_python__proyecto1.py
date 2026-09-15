@@ -179,7 +179,7 @@ class AppAgenda(ctk.CTk):
         self.configurar_pestana_categorias()
         self.configurar_pestana_eventos()
         self.configurar_pestana_ubicaciones()
-        #self.configurar_pestana_tareas()
+        self.configurar_pestana_tareas()
         #self.configurar_pestana_disponibilidad()
         self.seleccionar_modulo("Usuarios")
 
@@ -895,14 +895,14 @@ class AppAgenda(ctk.CTk):
         self.combo_tarea_prioridad.set("Media")
         self.combo_tarea_estado.set("Pendiente")
         hoy = datetime.now()
-        self.establecer_fecha(self.fecha_tarea_limite, hoy)
-        self.hora_tarea_limite.delete(0, tk.END); self.hora_tarea_limite.insert(0, "17:00")
+        self.establecer_fecha(self.fecha_limite, hoy)
+        self.hora_limite.delete(0, tk.END); self.hora_limite.insert(0, "17:00")
 
 
     def agregar_tarea(self):
         titulo = self.entry_tarea_titulo.get().strip()
         descripcion = self.entry_tarea_descripcion.get().strip() or None
-        evento = self.combo_tarea_evento.get(self.combo_tarea_evento.get())
+        evento = self.eventos_combo.get(self.combo_tarea_evento.get())
         responsable = self.usuarios_combo.get(self.combo_tarea_responsable.get())
         prioridad = self.combo_tarea_prioridad.get()
         estado = self.combo_tarea_estado.get()
@@ -929,7 +929,7 @@ class AppAgenda(ctk.CTk):
             return messagebox.showwarning("Selección requerida", "Selecciona una tarea para actualizar.")
         titulo = self.entry_tarea_titulo.get().strip()
         descripcion = self.entry_tarea_descripcion.get().strip() or None
-        evento = self.combo_tarea_evento.get(self.combo_tarea_evento.get())
+        evento = self.eventos_combo.get(self.combo_tarea_evento.get())
         responsable = self.usuarios_combo.get(self.combo_tarea_responsable.get())
         prioridad = self.combo_tarea_prioridad.get()
         estado = self.combo_tarea_estado.get()
@@ -991,7 +991,37 @@ class AppAgenda(ctk.CTk):
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    
+    def cargar_datos_tareas(self):
+        try:
+            rows = self.ejecutar_consulta("""
+                SELECT t.id_tarea, t.titulo, e.titulo, u.nombre, u.apellido,
+                       t.prioridad, t.estado, t.fecha_limite
+                FROM tareas t
+                JOIN eventos e ON e.id_evento = t.id_evento
+                JOIN usuarios u ON u.id_usuario = t.id_usuario_responsable
+                ORDER BY t.fecha_limite DESC
+            """, fetch=True)
+        for item in self.tree_tareas.get_children():
+            self.tree_tareas.delete(item)
+        for row in rows:
+            fecha = row[7].strftime("%Y-%m-%d %H:%M") if hasattr(row[7], "strftime") else row[7]
+            evento_etiqueta = f"{row[2]} — #{row[8]}"
+            usuario_etiqueta = f"{row[3]} {row[4]} — #{row[9]}"
+            self.tree_tareas.insert("", "end", values=(
+                row[0], row[1], evento_etiqueta, usuario_etiqueta, row[5], row[6], fecha
+            ))
+        # Actualizar combo de eventos
+        ev_rows = self.ejecutar_consulta("SELECT id_evento, titulo FROM eventos ORDER BY titulo", fetch=True)
+        self.eventos_combo = {}
+        for eid, titulo in ev_rows:
+            etiqueta = f"{titulo} — #{eid}"
+            self.eventos_combo[etiqueta] = eid
+        valores_ev = ["Seleccione un evento"] + list(self.eventos_combo.keys())
+        self.combo_tarea_evento.configure(values=valores_ev)
+        valores_u = ["Seleccione un usuario"] + list(self.usuarios_combo.keys())
+        self.combo_tarea_responsable.configure(values=valores_u)
+    except Exception as e:
+        print(f"Error cargando tareas: {e}")
  
 
 
