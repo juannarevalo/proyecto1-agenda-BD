@@ -192,3 +192,12 @@ CREATE TABLE disponibilidades (
 	CONSTRAINT check_hora CHECK (hora_inicio<hora_fin)
 	
 );
+--Los inserts fijos de los valores del catalogo de disponibilidad
+INSERT INTO catalogo_tipo_disponibilidad(nombre)
+VALUES ('Disponible');
+
+INSERT INTO catalogo_tipo_disponibilidad(nombre)
+VALUES ('Ocupado');
+
+INSERT INTO catalogo_tipo_disponibilidad(nombre)
+VALUES ('No disponible');
