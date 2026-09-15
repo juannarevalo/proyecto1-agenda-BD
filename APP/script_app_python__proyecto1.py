@@ -126,8 +126,8 @@ class AppAgenda(ctk.CTk):
         ).grid(row=1, column=0, padx=20, pady=(0, 25), sticky="w")
 
         self.botones_nav = {}
-        for i, (nombre, icono) in enumerate([
-            ("Usuarios", "👥"),
+        for i, (nombre, icono) in enumerate([ #se añadieron aqui los iconos de ubicaciones, tareas y disponibilidad
+            ("Usuarios", "👥"), 
             ("Categorías", "📁"),
             ("Eventos", "🗓️"),
             ("Ubicaciones", "📍")
@@ -168,13 +168,19 @@ class AppAgenda(ctk.CTk):
         self.tabview = ctk.CTkTabview(self.main_container, command=self.al_cambiar_pestana)
         self.tabview.grid(row=0, column=0, sticky="nsew")
 
-        self.tab_usuarios = self.tabview.add("Usuarios")
+        self.tab_usuarios = self.tabview.add("Usuarios") #se añadieron aqui las pestañas de ubicaciones, tareas y disponibilidad
         self.tab_categorias = self.tabview.add("Categorías")
         self.tab_eventos = self.tabview.add("Eventos")
+        self.tab_ubicaciones = self.tabview.add("Ubicaciones")
+        self.tab_tareas = self.tabview.add("Tareas")
+        self.tab_disponibilidad = self.tabview.add("Disponibilidad")
 
-        self.configurar_pestana_usuarios()
+        self.configurar_pestana_usuarios() #Aqui se configuro para llamar a las funciones de las pestañas
         self.configurar_pestana_categorias()
         self.configurar_pestana_eventos()
+        self.configurar_pestana_ubicaciones()
+        self.configurar_pestana_tareas()
+        self.configurar_pestana_disponibilidad()
         self.seleccionar_modulo("Usuarios")
 
     def al_cambiar_pestana(self):
