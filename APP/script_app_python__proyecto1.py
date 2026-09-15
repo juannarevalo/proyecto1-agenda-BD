@@ -858,9 +858,9 @@ class AppAgenda(ctk.CTk):
     
     
                 #Boton de reporte de tareas pendientes
-                ctk.CTkButton(form, text="Tareas pendientes", command=self.agregar_tarea).pack(fill="x", padx=10, pady=(12, 5))
+                ctk.CTkButton(form, text="Tareas pendientes", command=self.tareas_pendientes).pack(fill="x", padx=10, pady=(12, 5))
                 #Boton de reporte de tareas vencidas
-                ctk.CTkButton(form, text="Tareas vencidas", command=self.actualizar_tarea).pack(fill="x", padx=10, pady=(12, 5))
+                ctk.CTkButton(form, text="Tareas vencidas", command=self.tareas_vencidas).pack(fill="x", padx=10, pady=(12, 5))
     
          #Definicion de funciones CRUD para TAREAS
 
@@ -964,18 +964,18 @@ class AppAgenda(ctk.CTk):
         except Exception as e:
             messagebox.showerror("No se pudo eliminar", str(e))
 
-    def generar_ranking_ubicaciones(self):
+    def tareas_pendientes(self): #funcion de la consulta de tareas pendientes, funcionando con la vista creada en la base de datos vista_tareas_pendientes
         try:
-            rows = self.ejecutar_consulta("SELECT * FROM ubicaciones_mas_utilizadas", fetch=True)
+            rows = self.ejecutar_consulta("SELECT * FROM vista_tareas_pendientes", fetch=True)
             if not rows:
-                messagebox.showinfo("Ranking de ubicaciones", "No hay datos disponibles para generar el ranking.")
+                messagebox.showinfo("Tareas pendientes", "No hay tareas pendientes.")
                 return
-            texto = "Ranking de Ubicaciones Más Utilizadas:\n\n"
-            for i, row in enumerate(rows, start=1):
-                texto += f"{i}. {row[1]} - {row[0]} eventos\n"
-            messagebox.showinfo("Ranking de ubicaciones", texto)
+            texto = "Tareas Pendientes por usuario\n\n"
+            for row in rows:
+                texto += f"{row[1]} - {row[0]}\n"
+            messagebox.showinfo("Tareas pendientes", texto)
         except Exception as e:
-            messagebox.showerror("Error al generar ranking", str(e))
+            messagebox.showerror("Error", str(e)) 
 
     def cargar_datos_ubicaciones(self):
         try:
