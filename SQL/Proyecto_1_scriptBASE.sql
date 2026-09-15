@@ -161,7 +161,7 @@ CREATE VIEW vista_tareas_pendientes AS
 SELECT COUNT(estado) AS cantidad, usuarios.nombre, usuarios.apellido, estado 
 FROM tareas
 JOIN usuarios ON tareas.id_usuario_responsable = usuarios.id_usuario
-WHERE estado IN ('Pendiente', 'En Progreso')
+WHERE estado IN ('Pendiente', 'En progreso')
 GROUP BY usuarios.id_usuario, usuarios.nombre, usuarios.apellido, tareas.estado
 ORDER BY COUNT(estado) DESC;
 
