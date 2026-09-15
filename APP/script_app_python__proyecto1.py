@@ -542,6 +542,9 @@ class AppAgenda(ctk.CTk):
         titulo = self.entry_ev_titulo.get().strip()
         usuario = self.usuarios_combo.get(self.combo_ev_usuario.get())
         categoria = self.categorias_combo.get(self.combo_ev_categoria.get())
+        ubicacion_val = self.combo_ev_ubicacion.get() #Se obtiene lo que el usuario haya marcado para ubicacion
+        ubicacion = None if ubicacion_val == "Sin ubicación" else self.ubicaciones_combo.get(ubicacion_val) #Busca el id de la ubicacion marcada
+
         try:
             inicio = datetime.strptime(f"{self.obtener_fecha(self.fecha_inicio)} {self.hora_inicio.get().strip()}", "%Y-%m-%d %H:%M")
             fin = datetime.strptime(f"{self.obtener_fecha(self.fecha_fin)} {self.hora_fin.get().strip()}", "%Y-%m-%d %H:%M")
@@ -551,7 +554,7 @@ class AppAgenda(ctk.CTk):
             raise ValueError("Completa título, propietario y categoría.")
         if fin <= inicio:
             raise ValueError("La fecha y hora de finalización deben ser posteriores al inicio.")
-        return usuario, categoria, titulo, inicio, fin
+        return usuario, categoria, titulo, inicio, fin, ubicacion # Se agrega ubicacion a los datos que se retornan para poder insertarlo en la base de datos
 
     def agregar_evento(self):
         try:
