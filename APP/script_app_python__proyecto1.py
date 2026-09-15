@@ -532,6 +532,7 @@ class AppAgenda(ctk.CTk):
         self.entry_ev_titulo.delete(0, tk.END)
         self.combo_ev_usuario.set("Seleccione un usuario")
         self.combo_ev_categoria.set("Seleccione una categoría")
+        self.combo_ev_ubicacion.set("Sin ubicación") # que el limpiar afecte al selector de ubicacion igual que a todos
         hoy = datetime.now()
         self.establecer_fecha(self.fecha_inicio, hoy); self.establecer_fecha(self.fecha_fin, hoy)
         self.hora_inicio.delete(0, tk.END); self.hora_inicio.insert(0, "09:00")
