@@ -597,19 +597,21 @@ class AppAgenda(ctk.CTk):
         try:
             rows = self.ejecutar_consulta("""
                 SELECT e.id_evento, u.id_usuario, u.nombre, u.apellido,
-                       c.id_categoria, c.nombre, e.titulo, e.fecha_inicio, e.fecha_fin
+                       c.id_categoria, c.nombre, e.titulo, e.fecha_inicio, e.fecha_fin, ub.nombre, ub.id_ubicacion
                 FROM eventos e
                 JOIN usuarios u ON u.id_usuario = e.id_usuario_propietario
                 JOIN categorias c ON c.id_categoria = e.id_categoria
+                LEFT JOIN ubicaciones ub ON ub.id_ubicacion = e.id_ubicacion 
                 ORDER BY e.fecha_inicio DESC
-            """, fetch=True)
+            """, fetch=True) # Left Join para que muestre los eventos que no tienen ubicacion asignada, como una llamada o una reunion virtual.
             for item in self.tree_eventos.get_children(): self.tree_eventos.delete(item)
             for row in rows:
                 usuario = f"{row[2]} {row[3]} — #{row[1]}"
                 categoria = f"{row[5]} — #{row[4]}"
+                ubicacion = f"{row[9]} — #{row[10]}" if row[9] else "Sin ubicación", # Se agrega la ubicacion a la tabla de eventos, si no tiene ubicacion asignada se mostrara "Sin ubicación"
                 inicio = row[7].strftime("%Y-%m-%d %H:%M") if hasattr(row[7], "strftime") else row[7]
                 fin = row[8].strftime("%Y-%m-%d %H:%M") if hasattr(row[8], "strftime") else row[8]
-                self.tree_eventos.insert("", "end", values=(row[0], usuario, categoria, row[6], inicio, fin))
+                self.tree_eventos.insert("", "end", values=(row[0], usuario, categoria, ubicacion, row[6], inicio, fin))
 
             valores_u = ["Seleccione un usuario"] + list(self.usuarios_combo.keys())
             valores_c = ["Seleccione una categoría"] + list(self.categorias_combo.keys())
