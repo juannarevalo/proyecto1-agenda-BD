@@ -652,11 +652,11 @@ class AppAgenda(ctk.CTk):
             ctk.CTkButton(form, text="📊 Generar ranking de ubicaciones", command=self.generar_ranking_ubicaciones).pack(fill="x", padx=10, pady=(12, 5))
 
             #Definicion de funciones CRUD para ubicaciones
-             def ubicacion_seleccionada_id(self):
+    def ubicacion_seleccionada_id(self):
                     sel = self.tree_ubicaciones.selection()
                     return self.tree_ubicaciones.item(sel[0])["values"][0] if sel else None
             
-                def cargar_ubicacion_seleccionada(self, _=None):
+    def cargar_ubicacion_seleccionada(self, _=None):
                     sel = self.tree_ubicaciones.selection()
                     if not sel:
                         return
@@ -667,15 +667,15 @@ class AppAgenda(ctk.CTk):
                     self.entry_ubi_capacidad.delete(0, tk.END); self.entry_ubi_capacidad.insert(0, vals[4])
                     
             
-                def limpiar_form_ubicacion(self):
+    def limpiar_form_ubicacion(self):
                     self.tree_ubicaciones.selection_remove(self.tree_ubicaciones.selection())
                     self.entry_ubi_nombre.delete(0, tk.END)
                     self.entry_ubi_ciudad.delete(0, tk.END)
                     self.entry_ubi_direccion.delete(0, tk.END)
                     self.entry_ubi_capacidad.delete(0, tk.END)
-                    self.switch_usuario_activo.select()
+                    
             
-                def agregar_ubicacion(self):
+    def agregar_ubicacion(self):
                     nombre, ciudad, direccion, capacidad = (self.entry_ubi_nombre.get().strip(),
                                                             self.entry_ubi_ciudad.get().strip(),
                                                             self.entry_ubi_direccion.get().strip(),
@@ -690,49 +690,52 @@ class AppAgenda(ctk.CTk):
                     except Exception as e:
                         messagebox.showerror("Error", str(e))
             
-                def actualizar_usuario(self):
-                    uid = self.usuario_seleccionado_id()
+    def actualizar_ubicacion(self):
+                    uid = self.ubicacion_seleccionada_id()
                     if uid is None:
-                        return messagebox.showwarning("Selección requerida", "Selecciona un usuario para actualizar.")
-                    nombre, apellido = self.entry_nombre.get().strip(), self.entry_apellido.get().strip()
-                    if not nombre or not apellido:
-                        return messagebox.showwarning("Campos incompletos", "Indica nombre y apellido.")
+                        return messagebox.showwarning("Selección requerida", "Selecciona una ubicación para actualizar.")
+                    nombre, ciudad, direccion, capacidad = (self.entry_ubi_nombre.get().strip(),
+                                                            self.entry_ubi_ciudad.get().strip(),
+                                                            self.entry_ubi_direccion.get().strip(),
+                                                            self.entry_ubi_capacidad.get().strip())
+                    if not nombre or not ciudad or not direccion or not capacidad:
+                        return messagebox.showwarning("Campos incompletos", "Todos los campos son obligatorios.")
                     try:
-                        self.ejecutar_consulta("UPDATE usuarios SET nombre=%s, apellido=%s, activo=%s WHERE id_usuario=%s",
-                                               (nombre, apellido, self.switch_usuario_activo.get() == 1, uid))
+                        self.ejecutar_consulta("UPDATE ubicaciones SET nombre=%s, ciudad=%s, direccion=%s, capacidad=%s WHERE id_ubicacion=%s",
+                                               (nombre, ciudad, direccion, int(capacidad), uid))
                         self.actualizar_todas_las_tablas()
-                        messagebox.showinfo("Éxito", "Usuario actualizado.")
+                        messagebox.showinfo("Éxito", "Ubicacion actualizado.")
                     except Exception as e:
                         messagebox.showerror("Error", str(e))
-            
-                def eliminar_usuario(self):
-                    uid = self.usuario_seleccionado_id()
+
+        def eliminar_ubicacion(self):
+                    uid = self.ubicacion_seleccionada_id()
                     if uid is None:
-                        return messagebox.showwarning("Selección requerida", "Selecciona un usuario.")
-                    if not messagebox.askyesno("Confirmar", "¿Eliminar el usuario seleccionado?"):
+                        return messagebox.showwarning("Selección requerida", "Selecciona una ubicación.")
+                    if not messagebox.askyesno("Confirmar", "¿Eliminar la ubicación seleccionada?"):
                         return
                     try:
-                        self.ejecutar_consulta("DELETE FROM usuarios WHERE id_usuario=%s", (uid,))
-                        self.limpiar_form_usuario(); self.actualizar_todas_las_tablas()
-                        messagebox.showinfo("Eliminado", "Usuario eliminado.")
+                        self.ejecutar_consulta("DELETE FROM ubicaciones WHERE id_ubicacion=%s", (uid,))
+                        self.limpiar_form_ubicacion(); self.actualizar_todas_las_tablas()
+                        messagebox.showinfo("Eliminado", "Ubicación eliminada.")
                     except Exception as e:
                         messagebox.showerror("No se pudo eliminar", str(e))
             
-                def cargar_datos_usuarios(self):
+        def generar_ranking_ubicaciones(self):
                     try:
                         rows = self.ejecutar_consulta(
-                            "SELECT id_usuario, nombre, apellido, fecha_registro, activo FROM usuarios ORDER BY nombre, apellido",
+                            "SELECT * FROM ubicaciones_mas_utilizadas",
                             fetch=True
                         )
-                        for item in self.tree_usuarios.get_children(): self.tree_usuarios.delete(item)
-                        self.usuarios_combo = {}
-                        for row in rows:
-                            registro = row[3].strftime("%Y-%m-%d %H:%M") if hasattr(row[3], "strftime") else row[3]
-                            self.tree_usuarios.insert("", "end", values=(row[0], row[1], row[2], registro, "Sí" if row[4] else "No"))
-                            etiqueta = f"{row[1]} {row[2]} — #{row[0]}"
-                            self.usuarios_combo[etiqueta] = row[0]
+                        if not rows:
+                            messagebox.showinfo("Ranking de ubicaciones", "No hay datos disponibles para generar el ranking.")
+                            return
+                        texto = "Ranking de Ubicaciones Más Utilizadas:\n\n"
+                        for i, row in enumerate(rows, start=1):
+                            texto += f"{i}. {row[1]} - {row[0]} eventos\n"
+                            messagebox.showinfo("Ranking de ubicaciones", texto)
                     except Exception as e:
-                        print(f"Error cargando usuarios: {e}")
+                           messagebox.showerror("Error al generar ranking", str(e))
 
     # -------------------- REFRESCO GENERAL --------------------
 
