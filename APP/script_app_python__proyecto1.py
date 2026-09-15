@@ -924,36 +924,43 @@ class AppAgenda(ctk.CTk):
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    def actualizar_ubicacion(self):
-        uid = self.ubicacion_seleccionada_id()
-        if uid is None:
-            return messagebox.showwarning("Selección requerida", "Selecciona una ubicación para actualizar.")
-        nombre = self.entry_ubi_nombre.get().strip()
-        ciudad = self.entry_ubi_ciudad.get().strip()
-        direccion = self.entry_ubi_direccion.get().strip()
-        capacidad = self.entry_ubi_capacidad.get().strip()
-        if not nombre or not ciudad or not direccion or not capacidad:
-            return messagebox.showwarning("Campos incompletos", "Todos los campos son obligatorios.")
+    def actualizar_tarea(self):
+        tid = self.tarea_seleccionada_id()
+        if tid is None:
+            return messagebox.showwarning("Selección requerida", "Selecciona una tarea para actualizar.")
+        titulo = self.entry_tarea_titulo.get().strip()
+        descripcion = self.entry_tarea_descripcion.get().strip() or None
+        evento = self.combo_tarea_evento.get(self.combo_tarea_evento.get())
+        responsable = self.usuarios_combo.get(self.combo_tarea_responsable.get())
+        prioridad = self.combo_tarea_prioridad.get()
+        estado = self.combo_tarea_estado.get()
+        if not titulo or evento is None or responsable is None:
+            return messagebox.showwarning("Campos incompletos", "El título, evento y responsable son obligatorios.")
         try:
+            fecha_limite = datetime.strptime(
+                f"{self.obtener_fecha(self.fecha_limite)} {self.hora_limite.get().strip()}",
+                "%Y-%m-%d %H:%M"
+            )
             self.ejecutar_consulta(
-                "UPDATE ubicaciones SET nombre=%s, ciudad=%s, direccion=%s, capacidad=%s WHERE id_ubicacion=%s",
-                (nombre, ciudad, direccion, int(capacidad), uid)
+                "UPDATE tareas SET titulo=%s, descripcion=%s, prioridad=%s, estado=%s, fecha_limite=%s WHERE id_tarea=%s",
+                (titulo, descripcion, prioridad, estado, fecha_limite, responsable, evento, tid)
             )
             self.actualizar_todas_las_tablas()
-            messagebox.showinfo("Éxito", "Ubicación actualizada.")
+            messagebox.showinfo("Éxito", "Tarea actualizada.")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    def eliminar_ubicacion(self):
-        uid = self.ubicacion_seleccionada_id()
-        if uid is None:
-            return messagebox.showwarning("Selección requerida", "Selecciona una ubicación.")
-        if not messagebox.askyesno("Confirmar", "¿Eliminar la ubicación seleccionada?"):
+       
+    def eliminar_tarea(self):
+        tid = self.tarea_seleccionada_id()
+        if tid is None:
+            return messagebox.showwarning("Selección requerida", "Selecciona una tarea.")
+        if not messagebox.askyesno("Confirmar", "¿Eliminar la tarea seleccionada?"):
             return
         try:
-            self.ejecutar_consulta("DELETE FROM ubicaciones WHERE id_ubicacion=%s", (uid,))
-            self.limpiar_form_ubicacion(); self.actualizar_todas_las_tablas()
-            messagebox.showinfo("Eliminado", "Ubicación eliminada.")
+            self.ejecutar_consulta("DELETE FROM tareas WHERE id_tarea=%s", (tid,))
+            self.limpiar_form_tarea(); self.actualizar_todas_las_tablas()
+            messagebox.showinfo("Eliminado", "Tarea eliminada.")
         except Exception as e:
             messagebox.showerror("No se pudo eliminar", str(e))
 
