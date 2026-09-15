@@ -796,7 +796,7 @@ class AppAgenda(ctk.CTk):
 
 
     # -------------------- TAREAS MODULO 2 --------------------
-    def configurar_pestana_tareas(self):
+    def configurar_pestana_tareas(self): #configuarcion de la pestaña tareas para que salga el formulario con sus respectivas funciones y la tabla de tareas
                 self.crear_encabezado(self.tab_tareas, "Tareas", "Gestiona las tareas asociadas a los eventos.")
         
                 cuerpo = ctk.CTkFrame(self.tab_tareas, fg_color="transparent")
@@ -857,25 +857,35 @@ class AppAgenda(ctk.CTk):
                 ctk.CTkButton(form, text="🗑️ Eliminar seleccionada", command=self.eliminar_tarea, fg_color="#b33939", hover_color="#8f2d2d").pack(fill="x", padx=10, pady=5)
     
     
-                #Boton de reporte de ranking de ubicaciones
-                ctk.CTkButton(form, text="📊 Generar ranking de ubicaciones", command=self.generar_ranking_ubicaciones).pack(fill="x", padx=10, pady=(12, 5))
-                #Boton de reporte de historicos n
-                ctk.CTkButton(form, text="📈 Ver historico de eventos", command=self.ver_historico_eventos).pack(fill="x", padx=10, pady=(12, 5))
+                #Boton de reporte de tareas pendientes
+                ctk.CTkButton(form, text="Tareas pendientes", command=self.agregar_tarea).pack(fill="x", padx=10, pady=(12, 5))
+                #Boton de reporte de tareas vencidas
+                ctk.CTkButton(form, text="Tareas vencidas", command=self.actualizar_tarea).pack(fill="x", padx=10, pady=(12, 5))
     
-         #Definicion de funciones CRUD para ubicaciones
-    def ubicacion_seleccionada_id(self):
-        sel = self.tree_ubicaciones.selection()
-        return self.tree_ubicaciones.item(sel[0])["values"][0] if sel else None
+         #Definicion de funciones CRUD para TAREAS
 
-    def cargar_ubicacion_seleccionada(self, _=None):
-        sel = self.tree_ubicaciones.selection()
+         self.limpiar_form_tarea()
+    
+    def tarea_seleccionada_id(self):
+        sel = self.tree_tareas.selection()
+        return self.tree_tareas.item(sel[0])["values"][0] if sel else None
+
+    def cargar_tarea_seleccionada(self, _=None):
+        sel = self.tree_tareas.selection()
         if not sel:
             return
-        vals = self.tree_ubicaciones.item(sel[0])["values"]
-        self.entry_ubi_nombre.delete(0, tk.END); self.entry_ubi_nombre.insert(0, vals[1])
-        self.entry_ubi_ciudad.delete(0, tk.END); self.entry_ubi_ciudad.insert(0, vals[2])
-        self.entry_ubi_direccion.delete(0, tk.END); self.entry_ubi_direccion.insert(0, vals[3])
-        self.entry_ubi_capacidad.delete(0, tk.END); self.entry_ubi_capacidad.insert(0, vals[4])
+        vals = self.tree_tareas.item(sel[0])["values"]
+        self.entry_tarea_nombre.delete(0, tk.END); self.entry_tarea_nombre.insert(0, vals[1])
+        self.combo_tarea_evento.set(vals[2])
+        self.combo_tarea_responsable.set(vals[3])
+        self.combo_tarea_prioridad.set(vals[4])
+        self.combo_tarea_estado.set(vals[5])
+        try:
+            fecha_limite = datetime.strptime(str(vals[6]), "%Y-%m-%d %H:%M")
+            self.establecer_fecha(self.fecha_limite, fecha_limite)
+            self.hora_limite.delete(0, tk.END); self.hora_limite.insert(0, fecha_limite.strftime("%H:%M"))
+        except ValueError:
+            pass
 
     def limpiar_form_ubicacion(self):
         self.tree_ubicaciones.selection_remove(self.tree_ubicaciones.selection())
