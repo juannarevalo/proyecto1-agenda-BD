@@ -793,6 +793,205 @@ class AppAgenda(ctk.CTk):
             messagebox.showinfo("Histórico de eventos en ubicación", texto)
         except Exception as e:
             messagebox.showerror("Error", str(e))
+
+
+    # -------------------- TAREAS MODULO 2 --------------------
+    def configurar_pestana_tareas(self):
+                self.crear_encabezado(self.tab_tareas, "Tareas", "Gestiona las tareas asociadas a los eventos.")
+        
+                cuerpo = ctk.CTkFrame(self.tab_tareas, fg_color="transparent")
+                cuerpo.pack(fill="both", expand=True, padx=10, pady=5)
+                cuerpo.grid_columnconfigure(0, weight=3)
+                cuerpo.grid_columnconfigure(1, weight=1)
+                cuerpo.grid_rowconfigure(0, weight=1)
+        
+                tabla_frame = ctk.CTkFrame(cuerpo)
+                tabla_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 8))
+                form = ctk.CTkScrollableFrame(cuerpo, width=300)
+                form.grid(row=0, column=1, sticky="nsew")
+        
+                self.tree_tareas = self.crear_treeview(
+                    tabla_frame, ("ID", "Titulo", "Evento", "Responsable", "Prioridad", "Estado", "Fecha límite"),
+                    (70, 160, 160, 160, 80, 80, 120)
+                )
+                self.tree_tareas.bind("<<TreeviewSelect>>", self.cargar_tarea_seleccionada)
+        
+                ctk.CTkLabel(form, text="Formulario de tarea", font=ctk.CTkFont(size=16, weight="bold")).pack(pady=(10, 15))
+                self.entry_tarea_titulo = ctk.CTkEntry(form, placeholder_text="Título")
+                self.entry_tarea_titulo.pack(fill="x", padx=10, pady=6)
+                self.entry_tarea_descripcion = ctk.CTkEntry(form, placeholder_text="Descripción(opcional)")
+                self.entry_tarea_descripcion.pack(fill="x", padx=10, pady=6)
+
+                ctk.CTkLabel(form, text="Evento asociado").pack(anchor="w", padx=10, pady=(8, 2))
+                self.combo_tarea_evento = ctk.CTkComboBox(form, values=["Seleccione un evento"], state="readonly")
+                self.combo_tarea_evento.set("Seleccione un evento")
+                self.combo_tarea_evento.pack(fill="x", padx=10, pady=4)
+
+                ctk.CTkLabel(form, text="Responsable").pack(anchor="w", padx=10, pady=(8, 2))
+                self.combo_tarea_responsable = ctk.CTkComboBox(form, values=["Seleccione un usuario"], state="readonly")
+                self.combo_tarea_responsable.set("Seleccione un usuario")  
+                self.combo_tarea_responsable.pack(fill="x", padx=10, pady=4)
+
+                ctk.CTkLabel(form, text="Prioridad").pack(anchor="w", padx=10, pady=(8, 2))
+                self.combo_tarea_prioridad = ctk.CTkComboBox(form, values=["Alta", "Media", "Baja"], state="readonly")
+                self.combo_tarea_prioridad.set("Seleccione prioridad")
+                self.combo_tarea_prioridad.pack(fill="x", padx=10, pady=4)
+
+                ctk.CTkLabel(form, text="Estado").pack(anchor="w", padx=10, pady=(8, 2))
+                self.combo_tarea_estado = ctk.CTkComboBox(form, values=["Pendiente", "En progreso", "Completada"], state="readonly")
+                self.combo_tarea_estado.set("Seleccione estado")
+                self.combo_tarea_estado.pack(fill="x", padx=10, pady=4)
+
+                ctk.CTkLabel(form, text="Fecha límite").pack(anchor="w", padx=10, pady=(8, 2))
+                fila_fecha_limite = ctk.CTkFrame(form, fg_color="transparent")
+                fila_fecha_limite.pack(fill="x", padx=10)
+                self.fecha_limite = self.crear_selector_fecha(fila_fecha_limite)
+                self.fecha_limite.pack(side="left", fill="x", expand=True)
+                self.hora_limite = ctk.CTkEntry(fila_fecha_limite, placeholder_text="HH:MM", width=75)
+                self.hora_limite.pack(side="left", padx=(6, 0))
+
+
+                ctk.CTkButton(form, text="➕ Crear tarea", command=self.agregar_tarea).pack(fill="x", padx=10, pady=(12, 5))
+                ctk.CTkButton(form, text="💾 Actualizar seleccionada", command=self.actualizar_tarea).pack(fill="x", padx=10, pady=5)
+                ctk.CTkButton(form, text="🧹 Nueva / Limpiar", command=self.limpiar_form_tarea, fg_color="gray").pack(fill="x", padx=10, pady=5)
+                ctk.CTkButton(form, text="🗑️ Eliminar seleccionada", command=self.eliminar_tarea, fg_color="#b33939", hover_color="#8f2d2d").pack(fill="x", padx=10, pady=5)
+    
+    
+                #Boton de reporte de ranking de ubicaciones
+                ctk.CTkButton(form, text="📊 Generar ranking de ubicaciones", command=self.generar_ranking_ubicaciones).pack(fill="x", padx=10, pady=(12, 5))
+                #Boton de reporte de historicos n
+                ctk.CTkButton(form, text="📈 Ver historico de eventos", command=self.ver_historico_eventos).pack(fill="x", padx=10, pady=(12, 5))
+    
+         #Definicion de funciones CRUD para ubicaciones
+    def ubicacion_seleccionada_id(self):
+        sel = self.tree_ubicaciones.selection()
+        return self.tree_ubicaciones.item(sel[0])["values"][0] if sel else None
+
+    def cargar_ubicacion_seleccionada(self, _=None):
+        sel = self.tree_ubicaciones.selection()
+        if not sel:
+            return
+        vals = self.tree_ubicaciones.item(sel[0])["values"]
+        self.entry_ubi_nombre.delete(0, tk.END); self.entry_ubi_nombre.insert(0, vals[1])
+        self.entry_ubi_ciudad.delete(0, tk.END); self.entry_ubi_ciudad.insert(0, vals[2])
+        self.entry_ubi_direccion.delete(0, tk.END); self.entry_ubi_direccion.insert(0, vals[3])
+        self.entry_ubi_capacidad.delete(0, tk.END); self.entry_ubi_capacidad.insert(0, vals[4])
+
+    def limpiar_form_ubicacion(self):
+        self.tree_ubicaciones.selection_remove(self.tree_ubicaciones.selection())
+        self.entry_ubi_nombre.delete(0, tk.END)
+        self.entry_ubi_ciudad.delete(0, tk.END)
+        self.entry_ubi_direccion.delete(0, tk.END)
+        self.entry_ubi_capacidad.delete(0, tk.END)
+
+    def agregar_ubicacion(self):
+        nombre = self.entry_ubi_nombre.get().strip()
+        ciudad = self.entry_ubi_ciudad.get().strip()
+        direccion = self.entry_ubi_direccion.get().strip()
+        capacidad = self.entry_ubi_capacidad.get().strip()
+        if not nombre or not ciudad or not direccion or not capacidad:
+            return messagebox.showwarning("Campos incompletos", "Indica todos los campos de la ubicación.")
+        try:
+            self.ejecutar_consulta(
+                "INSERT INTO ubicaciones (nombre, ciudad, direccion, capacidad) VALUES (%s, %s, %s, %s)",
+                (nombre, ciudad, direccion, int(capacidad))
+            )
+            self.limpiar_form_ubicacion(); self.actualizar_todas_las_tablas()
+            messagebox.showinfo("Éxito", "Ubicación registrada correctamente.")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def actualizar_ubicacion(self):
+        uid = self.ubicacion_seleccionada_id()
+        if uid is None:
+            return messagebox.showwarning("Selección requerida", "Selecciona una ubicación para actualizar.")
+        nombre = self.entry_ubi_nombre.get().strip()
+        ciudad = self.entry_ubi_ciudad.get().strip()
+        direccion = self.entry_ubi_direccion.get().strip()
+        capacidad = self.entry_ubi_capacidad.get().strip()
+        if not nombre or not ciudad or not direccion or not capacidad:
+            return messagebox.showwarning("Campos incompletos", "Todos los campos son obligatorios.")
+        try:
+            self.ejecutar_consulta(
+                "UPDATE ubicaciones SET nombre=%s, ciudad=%s, direccion=%s, capacidad=%s WHERE id_ubicacion=%s",
+                (nombre, ciudad, direccion, int(capacidad), uid)
+            )
+            self.actualizar_todas_las_tablas()
+            messagebox.showinfo("Éxito", "Ubicación actualizada.")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def eliminar_ubicacion(self):
+        uid = self.ubicacion_seleccionada_id()
+        if uid is None:
+            return messagebox.showwarning("Selección requerida", "Selecciona una ubicación.")
+        if not messagebox.askyesno("Confirmar", "¿Eliminar la ubicación seleccionada?"):
+            return
+        try:
+            self.ejecutar_consulta("DELETE FROM ubicaciones WHERE id_ubicacion=%s", (uid,))
+            self.limpiar_form_ubicacion(); self.actualizar_todas_las_tablas()
+            messagebox.showinfo("Eliminado", "Ubicación eliminada.")
+        except Exception as e:
+            messagebox.showerror("No se pudo eliminar", str(e))
+
+    def generar_ranking_ubicaciones(self):
+        try:
+            rows = self.ejecutar_consulta("SELECT * FROM ubicaciones_mas_utilizadas", fetch=True)
+            if not rows:
+                messagebox.showinfo("Ranking de ubicaciones", "No hay datos disponibles para generar el ranking.")
+                return
+            texto = "Ranking de Ubicaciones Más Utilizadas:\n\n"
+            for i, row in enumerate(rows, start=1):
+                texto += f"{i}. {row[1]} - {row[0]} eventos\n"
+            messagebox.showinfo("Ranking de ubicaciones", texto)
+        except Exception as e:
+            messagebox.showerror("Error al generar ranking", str(e))
+
+    def cargar_datos_ubicaciones(self):
+        try:
+            rows = self.ejecutar_consulta(
+                "SELECT id_ubicacion, nombre, ciudad, direccion, capacidad FROM ubicaciones ORDER BY nombre",
+                fetch=True
+            )
+            for item in self.tree_ubicaciones.get_children():
+                self.tree_ubicaciones.delete(item)
+            self.ubicaciones_combo = {}
+            for row in rows:
+                self.tree_ubicaciones.insert("", "end", values=(row[0], row[1], row[2], row[3], row[4]))
+                etiqueta = f"{row[1]} — #{row[0]}"
+                self.ubicaciones_combo[etiqueta] = row[0]
+        except Exception as e:
+            print(f"Error cargando ubicaciones: {e}")
+
+    def ver_historico_eventos(self):
+        uid = self.ubicacion_seleccionada_id()
+        if uid is None:
+            return messagebox.showwarning("Selección requerida", "Selecciona una ubicación de la tabla primero.")
+        try:
+            rows = self.ejecutar_consulta("""
+                SELECT eventos.titulo, eventos.fecha_inicio, eventos.fecha_fin,
+                   usuarios.nombre, usuarios.apellido
+                FROM eventos
+                JOIN usuarios ON eventos.id_usuario_propietario = usuarios.id_usuario
+                WHERE eventos.id_ubicacion = %s
+                ORDER BY eventos.fecha_inicio DESC
+            """, (uid,), fetch=True)
+            if not rows:
+                return messagebox.showinfo("Histórico", "No hay eventos registrados en esta ubicación.")
+            texto = "📋 HISTÓRICO DE EVENTOS\n\n"
+            for row in rows:
+                inicio = row[1].strftime("%Y-%m-%d %H:%M") if hasattr(row[1], "strftime") else row[1]
+                fin = row[2].strftime("%Y-%m-%d %H:%M") if hasattr(row[2], "strftime") else row[2]
+                texto += f"• {row[0]}\n  Propietario: {row[3]} {row[4]}\n  {inicio} → {fin}\n\n"
+            messagebox.showinfo("Histórico de eventos en ubicación", texto)
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+ 
+
+
+
+
+    
     # -------------------- REFRESCO GENERAL --------------------
 
     def actualizar_todas_las_tablas(self): 
