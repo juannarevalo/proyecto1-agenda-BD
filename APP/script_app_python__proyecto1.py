@@ -977,8 +977,8 @@ class AppAgenda(ctk.CTk):
         except Exception as e:
             messagebox.showerror("Error", str(e)) 
 
-    def tareas_vencidas(self): #
-        try:
+    def tareas_vencidas(self): #funcion de la consulta de tareas vencidas, funcionando con la vista creada en la base de datos vista_tareas_vencidas
+        try:                    # las row tienen que calzar con el tipo de dato que dará el select de la vista para que no de error. 
             rows = self.ejecutar_consulta(
                 "SELECT * FROM vista_tareas_vencidas", fetch=True)
             if not rows:
@@ -986,7 +986,8 @@ class AppAgenda(ctk.CTk):
                 return
             texto = "Tareas Vencidas por usuario\n\n"
             for row in rows:
-                fecha=
+                fecha = row[4].strftime("%Y-%m-%d %H:%M") if hasattr(row[4], "strftime") else row[4]
+                texto += f"• {row[0]} (Evento: {row[1]})\n  Responsable: {row[2]} {row[3]} | Vencía: {fecha} | Estado: {row[5]}\n\n"
             messagebox.showinfo("Tareas vencidas", texto)
         except Exception as e:
             messagebox.showerror("Error", str(e))
