@@ -995,33 +995,33 @@ class AppAgenda(ctk.CTk):
         try:
             rows = self.ejecutar_consulta("""
                 SELECT t.id_tarea, t.titulo, e.titulo, u.nombre, u.apellido,
-                       t.prioridad, t.estado, t.fecha_limite
+                       t.prioridad, t.estado, t.fecha_limite, e.id_evento, u.id_usuario
                 FROM tareas t
                 JOIN eventos e ON e.id_evento = t.id_evento
                 JOIN usuarios u ON u.id_usuario = t.id_usuario_responsable
                 ORDER BY t.fecha_limite DESC
             """, fetch=True)
-        for item in self.tree_tareas.get_children():
-            self.tree_tareas.delete(item)
-        for row in rows:
-            fecha = row[7].strftime("%Y-%m-%d %H:%M") if hasattr(row[7], "strftime") else row[7]
-            evento_etiqueta = f"{row[2]} — #{row[8]}"
-            usuario_etiqueta = f"{row[3]} {row[4]} — #{row[9]}"
-            self.tree_tareas.insert("", "end", values=(
-                row[0], row[1], evento_etiqueta, usuario_etiqueta, row[5], row[6], fecha
+            for item in self.tree_tareas.get_children():
+                self.tree_tareas.delete(item)
+            for row in rows:
+                fecha = row[7].strftime("%Y-%m-%d %H:%M") if hasattr(row[7], "strftime") else row[7]
+                evento_etiqueta = f"{row[2]} — #{row[8]}"
+                usuario_etiqueta = f"{row[3]} {row[4]} — #{row[9]}"
+                self.tree_tareas.insert("", "end", values=(
+                    row[0], row[1], evento_etiqueta, usuario_etiqueta, row[5], row[6], fecha
             ))
         # Actualizar combo de eventos
-        ev_rows = self.ejecutar_consulta("SELECT id_evento, titulo FROM eventos ORDER BY titulo", fetch=True)
-        self.eventos_combo = {}
-        for eid, titulo in ev_rows:
-            etiqueta = f"{titulo} — #{eid}"
-            self.eventos_combo[etiqueta] = eid
-        valores_ev = ["Seleccione un evento"] + list(self.eventos_combo.keys())
-        self.combo_tarea_evento.configure(values=valores_ev)
-        valores_u = ["Seleccione un usuario"] + list(self.usuarios_combo.keys())
-        self.combo_tarea_responsable.configure(values=valores_u)
-    except Exception as e:
-        print(f"Error cargando tareas: {e}")
+            ev_rows = self.ejecutar_consulta("SELECT id_evento, titulo FROM eventos ORDER BY titulo", fetch=True)
+            self.eventos_combo = {}
+            for eid, titulo in ev_rows: #arma los diccionarios para que el combo box de eventos funcione correctamente
+                etiqueta = f"{titulo} — #{eid}"
+                self.eventos_combo[etiqueta] = eid
+                valores_ev = ["Seleccione un evento"] + list(self.eventos_combo.keys())
+                self.combo_tarea_evento.configure(values=valores_ev)
+                valores_u = ["Seleccione un usuario"] + list(self.usuarios_combo.keys())
+                self.combo_tarea_responsable.configure(values=valores_u)
+        except Exception as e:
+            print(f"Error cargando tareas: {e}")
  
 
 
@@ -1033,9 +1033,9 @@ class AppAgenda(ctk.CTk):
     def actualizar_todas_las_tablas(self): 
         self.cargar_datos_usuarios()
         self.cargar_datos_categorias()
+        self.cargar_datos_ubicaciones() ## Se incluyeron las nuevas funciones para recargar datos
         self.cargar_datos_eventos()
-        self.cargar_datos_ubicaciones() ## Se incluyeron las nuevas funciones para recargar datos 
-        #self.cargar_datos_tareas()
+        self.cargar_datos_tareas()
         #self.cargar_datos_disponibilidad()
 
 
