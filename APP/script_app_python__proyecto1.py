@@ -640,14 +640,95 @@ class AppAgenda(ctk.CTk):
             self.entry_ubi_capacidad = ctk.CTkEntry(form, placeholder_text="Capacidad")
             self.entry_ubi_capacidad.pack(fill="x", padx=10, pady=6)
 
-            self.switch_usuario_activo = ctk.CTkSwitch(form, text="Usuario activo")
-            self.switch_usuario_activo.select()
-            self.switch_usuario_activo.pack(anchor="w", padx=12, pady=10)
+        
     
-            ctk.CTkButton(form, text="➕ Registrar usuario", command=self.agregar_usuario).pack(fill="x", padx=10, pady=(12, 5))
-            ctk.CTkButton(form, text="💾 Actualizar seleccionado", command=self.actualizar_usuario).pack(fill="x", padx=10, pady=5)
-            ctk.CTkButton(form, text="🧹 Nuevo / Limpiar", command=self.limpiar_form_usuario, fg_color="gray").pack(fill="x", padx=10, pady=5)
-            ctk.CTkButton(form, text="🗑️ Eliminar seleccionado", command=self.eliminar_usuario, fg_color="#b33939", hover_color="#8f2d2d").pack(fill="x", padx=10, pady=5)
+            ctk.CTkButton(form, text="➕ Registrar ubicación", command=self.agregar_ubicacion).pack(fill="x", padx=10, pady=(12, 5))
+            ctk.CTkButton(form, text="💾 Actualizar seleccionada", command=self.actualizar_ubicacion).pack(fill="x", padx=10, pady=5)
+            ctk.CTkButton(form, text="🧹 Nueva / Limpiar", command=self.limpiar_form_ubicacion, fg_color="gray").pack(fill="x", padx=10, pady=5)
+            ctk.CTkButton(form, text="🗑️ Eliminar seleccionada", command=self.eliminar_ubicacion, fg_color="#b33939", hover_color="#8f2d2d").pack(fill="x", padx=10, pady=5)
+
+
+            #Boton de reporte de ranking de ubicaciones
+            ctk.CTkButton(form, text="📊 Generar ranking de ubicaciones", command=self.generar_ranking_ubicaciones).pack(fill="x", padx=10, pady=(12, 5))
+
+            #Definicion de funciones CRUD para ubicaciones
+             def ubicacion_seleccionada_id(self):
+                    sel = self.tree_ubicaciones.selection()
+                    return self.tree_ubicaciones.item(sel[0])["values"][0] if sel else None
+            
+                def cargar_usuario_seleccionado(self, _=None):
+                    sel = self.tree_usuarios.selection()
+                    if not sel:
+                        return
+                    vals = self.tree_usuarios.item(sel[0])["values"]
+                    self.entry_nombre.delete(0, tk.END); self.entry_nombre.insert(0, vals[1])
+                    self.entry_apellido.delete(0, tk.END); self.entry_apellido.insert(0, vals[2])
+                    if vals[4]:
+                        self.switch_usuario_activo.select()
+                    else:
+                        self.switch_usuario_activo.deselect()
+            
+                def limpiar_form_usuario(self):
+                    self.tree_usuarios.selection_remove(self.tree_usuarios.selection())
+                    self.entry_nombre.delete(0, tk.END)
+                    self.entry_apellido.delete(0, tk.END)
+                    self.switch_usuario_activo.select()
+            
+                def agregar_usuario(self):
+                    nombre, apellido = self.entry_nombre.get().strip(), self.entry_apellido.get().strip()
+                    if not nombre or not apellido:
+                        return messagebox.showwarning("Campos incompletos", "Indica nombre y apellido.")
+                    try:
+                        self.ejecutar_consulta("INSERT INTO usuarios (nombre, apellido, activo) VALUES (%s, %s, %s)",
+                                               (nombre, apellido, self.switch_usuario_activo.get() == 1))
+                        self.limpiar_form_usuario(); self.actualizar_todas_las_tablas()
+                        messagebox.showinfo("Éxito", "Usuario registrado correctamente.")
+                    except Exception as e:
+                        messagebox.showerror("Error de base de datos", str(e))
+            
+                def actualizar_usuario(self):
+                    uid = self.usuario_seleccionado_id()
+                    if uid is None:
+                        return messagebox.showwarning("Selección requerida", "Selecciona un usuario para actualizar.")
+                    nombre, apellido = self.entry_nombre.get().strip(), self.entry_apellido.get().strip()
+                    if not nombre or not apellido:
+                        return messagebox.showwarning("Campos incompletos", "Indica nombre y apellido.")
+                    try:
+                        self.ejecutar_consulta("UPDATE usuarios SET nombre=%s, apellido=%s, activo=%s WHERE id_usuario=%s",
+                                               (nombre, apellido, self.switch_usuario_activo.get() == 1, uid))
+                        self.actualizar_todas_las_tablas()
+                        messagebox.showinfo("Éxito", "Usuario actualizado.")
+                    except Exception as e:
+                        messagebox.showerror("Error", str(e))
+            
+                def eliminar_usuario(self):
+                    uid = self.usuario_seleccionado_id()
+                    if uid is None:
+                        return messagebox.showwarning("Selección requerida", "Selecciona un usuario.")
+                    if not messagebox.askyesno("Confirmar", "¿Eliminar el usuario seleccionado?"):
+                        return
+                    try:
+                        self.ejecutar_consulta("DELETE FROM usuarios WHERE id_usuario=%s", (uid,))
+                        self.limpiar_form_usuario(); self.actualizar_todas_las_tablas()
+                        messagebox.showinfo("Eliminado", "Usuario eliminado.")
+                    except Exception as e:
+                        messagebox.showerror("No se pudo eliminar", str(e))
+            
+                def cargar_datos_usuarios(self):
+                    try:
+                        rows = self.ejecutar_consulta(
+                            "SELECT id_usuario, nombre, apellido, fecha_registro, activo FROM usuarios ORDER BY nombre, apellido",
+                            fetch=True
+                        )
+                        for item in self.tree_usuarios.get_children(): self.tree_usuarios.delete(item)
+                        self.usuarios_combo = {}
+                        for row in rows:
+                            registro = row[3].strftime("%Y-%m-%d %H:%M") if hasattr(row[3], "strftime") else row[3]
+                            self.tree_usuarios.insert("", "end", values=(row[0], row[1], row[2], registro, "Sí" if row[4] else "No"))
+                            etiqueta = f"{row[1]} {row[2]} — #{row[0]}"
+                            self.usuarios_combo[etiqueta] = row[0]
+                    except Exception as e:
+                        print(f"Error cargando usuarios: {e}")
 
     # -------------------- REFRESCO GENERAL --------------------
 
