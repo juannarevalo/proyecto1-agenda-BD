@@ -130,9 +130,9 @@ class AppAgenda(ctk.CTk):
             ("Usuarios", "👥"), 
             ("Categorías", "📁"),
             ("Eventos", "🗓️"),
-            ("Ubicaciones", "📍")
-            ("Tareas", "✅")
-            ("Disponibilidad", "⏰")
+            ("Ubicaciones", "📍"),
+            ("Tareas", "✅"),
+            ("Disponibilidad", "⏰"),
         ], start=2):
             btn = ctk.CTkButton(
                 self.sidebar_frame, text=f"{icono}  {nombre}",
@@ -653,90 +653,104 @@ class AppAgenda(ctk.CTk):
 
             #Definicion de funciones CRUD para ubicaciones
     def ubicacion_seleccionada_id(self):
-                    sel = self.tree_ubicaciones.selection()
-                    return self.tree_ubicaciones.item(sel[0])["values"][0] if sel else None
-            
+        sel = self.tree_ubicaciones.selection()
+        return self.tree_ubicaciones.item(sel[0])["values"][0] if sel else None
+
     def cargar_ubicacion_seleccionada(self, _=None):
-                    sel = self.tree_ubicaciones.selection()
-                    if not sel:
-                        return
-                    vals = self.tree_ubicaciones.item(sel[0])["values"]
-                    self.entry_ubi_nombre.delete(0, tk.END); self.entry_ubi_nombre.insert(0, vals[1])
-                    self.entry_ubi_ciudad.delete(0, tk.END); self.entry_ubi_ciudad.insert(0, vals[2])
-                    self.entry_ubi_direccion.delete(0, tk.END); self.entry_ubi_direccion.insert(0, vals[3])
-                    self.entry_ubi_capacidad.delete(0, tk.END); self.entry_ubi_capacidad.insert(0, vals[4])
-                    
-            
+        sel = self.tree_ubicaciones.selection()
+        if not sel:
+            return
+        vals = self.tree_ubicaciones.item(sel[0])["values"]
+        self.entry_ubi_nombre.delete(0, tk.END); self.entry_ubi_nombre.insert(0, vals[1])
+        self.entry_ubi_ciudad.delete(0, tk.END); self.entry_ubi_ciudad.insert(0, vals[2])
+        self.entry_ubi_direccion.delete(0, tk.END); self.entry_ubi_direccion.insert(0, vals[3])
+        self.entry_ubi_capacidad.delete(0, tk.END); self.entry_ubi_capacidad.insert(0, vals[4])
+
     def limpiar_form_ubicacion(self):
-                    self.tree_ubicaciones.selection_remove(self.tree_ubicaciones.selection())
-                    self.entry_ubi_nombre.delete(0, tk.END)
-                    self.entry_ubi_ciudad.delete(0, tk.END)
-                    self.entry_ubi_direccion.delete(0, tk.END)
-                    self.entry_ubi_capacidad.delete(0, tk.END)
-                    
-            
+        self.tree_ubicaciones.selection_remove(self.tree_ubicaciones.selection())
+        self.entry_ubi_nombre.delete(0, tk.END)
+        self.entry_ubi_ciudad.delete(0, tk.END)
+        self.entry_ubi_direccion.delete(0, tk.END)
+        self.entry_ubi_capacidad.delete(0, tk.END)
+
     def agregar_ubicacion(self):
-                    nombre, ciudad, direccion, capacidad = (self.entry_ubi_nombre.get().strip(),
-                                                            self.entry_ubi_ciudad.get().strip(),
-                                                            self.entry_ubi_direccion.get().strip(),
-                                                            self.entry_ubi_capacidad.get().strip())
-                    if not nombre or not ciudad or not direccion or not capacidad:
-                        return messagebox.showwarning("Campos incompletos", "Indica todos los campos de la ubicación.")
-                    try:
-                        self.ejecutar_consulta("INSERT INTO ubicaciones (nombre, ciudad, direccion, capacidad) VALUES (%s, %s, %s, %s)",
-                                               (nombre, ciudad, direccion, int(capacidad))) 
-                        self.limpiar_form_ubicacion(); self.actualizar_todas_las_tablas()
-                        messagebox.showinfo("Éxito", "Ubicación registrada correctamente.")
-                    except Exception as e:
-                        messagebox.showerror("Error", str(e))
-            
+        nombre = self.entry_ubi_nombre.get().strip()
+        ciudad = self.entry_ubi_ciudad.get().strip()
+        direccion = self.entry_ubi_direccion.get().strip()
+        capacidad = self.entry_ubi_capacidad.get().strip()
+        if not nombre or not ciudad or not direccion or not capacidad:
+            return messagebox.showwarning("Campos incompletos", "Indica todos los campos de la ubicación.")
+        try:
+            self.ejecutar_consulta(
+                "INSERT INTO ubicaciones (nombre, ciudad, direccion, capacidad) VALUES (%s, %s, %s, %s)",
+                (nombre, ciudad, direccion, int(capacidad))
+            )
+            self.limpiar_form_ubicacion(); self.actualizar_todas_las_tablas()
+            messagebox.showinfo("Éxito", "Ubicación registrada correctamente.")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
     def actualizar_ubicacion(self):
-                    uid = self.ubicacion_seleccionada_id()
-                    if uid is None:
-                        return messagebox.showwarning("Selección requerida", "Selecciona una ubicación para actualizar.")
-                    nombre, ciudad, direccion, capacidad = (self.entry_ubi_nombre.get().strip(),
-                                                            self.entry_ubi_ciudad.get().strip(),
-                                                            self.entry_ubi_direccion.get().strip(),
-                                                            self.entry_ubi_capacidad.get().strip())
-                    if not nombre or not ciudad or not direccion or not capacidad:
-                        return messagebox.showwarning("Campos incompletos", "Todos los campos son obligatorios.")
-                    try:
-                        self.ejecutar_consulta("UPDATE ubicaciones SET nombre=%s, ciudad=%s, direccion=%s, capacidad=%s WHERE id_ubicacion=%s",
-                                               (nombre, ciudad, direccion, int(capacidad), uid))
-                        self.actualizar_todas_las_tablas()
-                        messagebox.showinfo("Éxito", "Ubicacion actualizado.")
-                    except Exception as e:
-                        messagebox.showerror("Error", str(e))
+        uid = self.ubicacion_seleccionada_id()
+        if uid is None:
+            return messagebox.showwarning("Selección requerida", "Selecciona una ubicación para actualizar.")
+        nombre = self.entry_ubi_nombre.get().strip()
+        ciudad = self.entry_ubi_ciudad.get().strip()
+        direccion = self.entry_ubi_direccion.get().strip()
+        capacidad = self.entry_ubi_capacidad.get().strip()
+        if not nombre or not ciudad or not direccion or not capacidad:
+            return messagebox.showwarning("Campos incompletos", "Todos los campos son obligatorios.")
+        try:
+            self.ejecutar_consulta(
+                "UPDATE ubicaciones SET nombre=%s, ciudad=%s, direccion=%s, capacidad=%s WHERE id_ubicacion=%s",
+                (nombre, ciudad, direccion, int(capacidad), uid)
+            )
+            self.actualizar_todas_las_tablas()
+            messagebox.showinfo("Éxito", "Ubicación actualizada.")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
 
     def eliminar_ubicacion(self):
-                    uid = self.ubicacion_seleccionada_id()
-                    if uid is None:
-                        return messagebox.showwarning("Selección requerida", "Selecciona una ubicación.")
-                    if not messagebox.askyesno("Confirmar", "¿Eliminar la ubicación seleccionada?"):
-                        return
-                    try:
-                        self.ejecutar_consulta("DELETE FROM ubicaciones WHERE id_ubicacion=%s", (uid,))
-                        self.limpiar_form_ubicacion(); self.actualizar_todas_las_tablas()
-                        messagebox.showinfo("Eliminado", "Ubicación eliminada.")
-                    except Exception as e:
-                        messagebox.showerror("No se pudo eliminar", str(e))
-        
-    def generar_ranking_ubicaciones(self):
-                    try:
-                        rows = self.ejecutar_consulta(
-                            "SELECT * FROM ubicaciones_mas_utilizadas",
-                            fetch=True
-                        )
-                        if not rows:
-                            messagebox.showinfo("Ranking de ubicaciones", "No hay datos disponibles para generar el ranking.")
-                            return
-                        texto = "Ranking de Ubicaciones Más Utilizadas:\n\n"
-                        for i, row in enumerate(rows, start=1):
-                            texto += f"{i}. {row[1]} - {row[0]} eventos\n"
-                            messagebox.showinfo("Ranking de ubicaciones", texto)
-                    except Exception as e:
-                           messagebox.showerror("Error al generar ranking", str(e))
+        uid = self.ubicacion_seleccionada_id()
+        if uid is None:
+            return messagebox.showwarning("Selección requerida", "Selecciona una ubicación.")
+        if not messagebox.askyesno("Confirmar", "¿Eliminar la ubicación seleccionada?"):
+            return
+        try:
+            self.ejecutar_consulta("DELETE FROM ubicaciones WHERE id_ubicacion=%s", (uid,))
+            self.limpiar_form_ubicacion(); self.actualizar_todas_las_tablas()
+            messagebox.showinfo("Eliminado", "Ubicación eliminada.")
+        except Exception as e:
+            messagebox.showerror("No se pudo eliminar", str(e))
 
+    def generar_ranking_ubicaciones(self):
+        try:
+            rows = self.ejecutar_consulta("SELECT * FROM ubicaciones_mas_utilizadas", fetch=True)
+            if not rows:
+                messagebox.showinfo("Ranking de ubicaciones", "No hay datos disponibles para generar el ranking.")
+                return
+            texto = "Ranking de Ubicaciones Más Utilizadas:\n\n"
+            for i, row in enumerate(rows, start=1):
+                texto += f"{i}. {row[1]} - {row[0]} eventos\n"
+            messagebox.showinfo("Ranking de ubicaciones", texto)
+        except Exception as e:
+            messagebox.showerror("Error al generar ranking", str(e))
+
+    def cargar_datos_ubicaciones(self):
+        try:
+            rows = self.ejecutar_consulta(
+                "SELECT id_ubicacion, nombre, ciudad, direccion, capacidad FROM ubicaciones ORDER BY nombre",
+                fetch=True
+            )
+            for item in self.tree_ubicaciones.get_children():
+                self.tree_ubicaciones.delete(item)
+            self.ubicaciones_combo = {}
+            for row in rows:
+                self.tree_ubicaciones.insert("", "end", values=(row[0], row[1], row[2], row[3], row[4]))
+                etiqueta = f"{row[1]} — #{row[0]}"
+                self.ubicaciones_combo[etiqueta] = row[0]
+        except Exception as e:
+            print(f"Error cargando ubicaciones: {e}")
     # -------------------- REFRESCO GENERAL --------------------
 
     def actualizar_todas_las_tablas(self): 
