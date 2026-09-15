@@ -768,16 +768,16 @@ class AppAgenda(ctk.CTk):
                 WHERE eventos.id_ubicacion = %s
                 ORDER BY eventos.fecha_inicio DESC
             """, (uid,), fetch=True)
-        if not rows:
-            return messagebox.showinfo("Histórico", "No hay eventos registrados en esta ubicación.")
-        texto = "📋 HISTÓRICO DE EVENTOS\n\n"
-        for row in rows:
-            inicio = row[1].strftime("%Y-%m-%d %H:%M") if hasattr(row[1], "strftime") else row[1]
-            fin = row[2].strftime("%Y-%m-%d %H:%M") if hasattr(row[2], "strftime") else row[2]
-            texto += f"• {row[0]}\n  Propietario: {row[3]} {row[4]}\n  {inicio} → {fin}\n\n"
-        messagebox.showinfo("Histórico de eventos en ubicación", texto)
-    except Exception as e:
-        messagebox.showerror("Error", str(e))
+            if not rows:
+                return messagebox.showinfo("Histórico", "No hay eventos registrados en esta ubicación.")
+            texto = "📋 HISTÓRICO DE EVENTOS\n\n"
+            for row in rows:
+                inicio = row[1].strftime("%Y-%m-%d %H:%M") if hasattr(row[1], "strftime") else row[1]
+                fin = row[2].strftime("%Y-%m-%d %H:%M") if hasattr(row[2], "strftime") else row[2]
+                texto += f"• {row[0]}\n  Propietario: {row[3]} {row[4]}\n  {inicio} → {fin}\n\n"
+            messagebox.showinfo("Histórico de eventos en ubicación", texto)
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
     # -------------------- REFRESCO GENERAL --------------------
 
     def actualizar_todas_las_tablas(self): 
