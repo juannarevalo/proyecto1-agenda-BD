@@ -462,6 +462,12 @@ class AppAgenda(ctk.CTk):
         self.combo_ev_categoria.set("Seleccione una categoría")
         self.combo_ev_categoria.pack(fill="x", padx=10, pady=4)
 
+        #Creacion del selector de ubicacion
+        ctk.CTkLabel(form, text="Ubicación").pack(anchor="w", padx=10, pady=(8, 2))
+        self.combo_ev_ubicacion = ctk.CTkComboBox(form, values=["Sin ubicación"], state="readonly")
+        self.combo_ev_ubicacion.set("Sin ubicación")
+        self.combo_ev_ubicacion.pack(fill="x", padx=10, pady=4)
+
         ctk.CTkLabel(form, text="Inicio").pack(anchor="w", padx=10, pady=(10, 2))
         fila_inicio = ctk.CTkFrame(form, fg_color="transparent"); fila_inicio.pack(fill="x", padx=10)
         self.fecha_inicio = self.crear_selector_fecha(fila_inicio)
