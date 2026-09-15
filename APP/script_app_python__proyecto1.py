@@ -442,8 +442,8 @@ class AppAgenda(ctk.CTk):
         form = ctk.CTkScrollableFrame(cuerpo, width=350); form.grid(row=0, column=1, sticky="nsew")
 
         self.tree_eventos = self.crear_treeview(
-            tabla, ("ID", "Propietario", "Categoría", "Título", "Inicio", "Fin"),
-            (70, 170, 150, 220, 150, 150)
+            tabla, ("ID", "Propietario", "Categoría", "Ubicacion", "Título", "Inicio", "Fin"), #Se agrega ubicacion para que lo muestre en la tabla de eventos
+            (70, 170, 150, 220, 220, 150, 150)
         )
         self.tree_eventos.bind("<<TreeviewSelect>>", self.cargar_evento_seleccionado)
 
