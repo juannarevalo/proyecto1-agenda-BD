@@ -558,12 +558,12 @@ class AppAgenda(ctk.CTk):
 
     def agregar_evento(self):
         try:
-            datos = self.datos_evento_formulario()
+            usuario, categoria, titulo, inicio, fin, ubicacion = self.datos_evento_formulario() #para al agregar un evento que se pueda agregar la ubicacion
             self.ejecutar_consulta("""
                 INSERT INTO eventos
-                (id_usuario_propietario, id_categoria, titulo, fecha_inicio, fecha_fin)
-                VALUES (%s, %s, %s, %s, %s)
-            """, datos)
+                (id_usuario_propietario, id_categoria, titulo, fecha_inicio, fecha_fin, id_ubicacion)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (usuario, categoria, titulo, inicio, fin, ubicacion))
             self.limpiar_form_evento(); self.cargar_datos_eventos()
             messagebox.showinfo("Éxito", "Evento creado correctamente.")
         except Exception as e:
@@ -573,11 +573,11 @@ class AppAgenda(ctk.CTk):
         eid = self.evento_seleccionado_id()
         if eid is None: return messagebox.showwarning("Selección requerida", "Selecciona un evento.")
         try:
-            usuario, categoria, titulo, inicio, fin = self.datos_evento_formulario()
+            usuario, categoria, titulo, inicio, fin, ubicacion = self.datos_evento_formulario()
             self.ejecutar_consulta("""
                 UPDATE eventos SET id_usuario_propietario=%s, id_categoria=%s,
-                titulo=%s, fecha_inicio=%s, fecha_fin=%s WHERE id_evento=%s
-            """, (usuario, categoria, titulo, inicio, fin, eid))
+                titulo=%s, fecha_inicio=%s, fecha_fin=%s, id_ubicacion=%s WHERE id_evento=%s 
+            """, (usuario, categoria, titulo, inicio, fin, ubicacion, eid)) #inclyo ubicacion para que cuando edite un evento se pueda cambiar la ubicacion del mismo
             self.cargar_datos_eventos(); messagebox.showinfo("Éxito", "Evento actualizado.")
         except Exception as e:
             messagebox.showerror("No se pudo actualizar", str(e))
