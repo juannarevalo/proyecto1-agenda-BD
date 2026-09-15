@@ -754,6 +754,30 @@ class AppAgenda(ctk.CTk):
                 self.ubicaciones_combo[etiqueta] = row[0]
         except Exception as e:
             print(f"Error cargando ubicaciones: {e}")
+
+    def ver_historico_eventos(self):
+        uid = self.ubicacion_seleccionada_id()
+        if uid is None:
+            return messagebox.showwarning("Selección requerida", "Selecciona una ubicación de la tabla primero.")
+        try:
+            rows = self.ejecutar_consulta("""
+                SELECT eventos.titulo, eventos.fecha_inicio, eventos.fecha_fin,
+                   usuarios.nombre, usuarios.apellido
+                FROM eventos
+                JOIN usuarios ON eventos.id_usuario_propietario = usuarios.id_usuario
+                WHERE eventos.id_ubicacion = %s
+                ORDER BY eventos.fecha_inicio DESC
+            """, (uid,), fetch=True)
+        if not rows:
+            return messagebox.showinfo("Histórico", "No hay eventos registrados en esta ubicación.")
+        texto = "📋 HISTÓRICO DE EVENTOS\n\n"
+        for row in rows:
+            inicio = row[1].strftime("%Y-%m-%d %H:%M") if hasattr(row[1], "strftime") else row[1]
+            fin = row[2].strftime("%Y-%m-%d %H:%M") if hasattr(row[2], "strftime") else row[2]
+            texto += f"• {row[0]}\n  Propietario: {row[3]} {row[4]}\n  {inicio} → {fin}\n\n"
+        messagebox.showinfo("Histórico de eventos en ubicación", texto)
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
     # -------------------- REFRESCO GENERAL --------------------
 
     def actualizar_todas_las_tablas(self): 
