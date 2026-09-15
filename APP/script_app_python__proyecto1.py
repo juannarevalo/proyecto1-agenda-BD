@@ -864,7 +864,6 @@ class AppAgenda(ctk.CTk):
     
          #Definicion de funciones CRUD para TAREAS
 
-         self.limpiar_form_tarea()
     
     def tarea_seleccionada_id(self):
         sel = self.tree_tareas.selection()
@@ -890,34 +889,38 @@ class AppAgenda(ctk.CTk):
     def limpiar_form_tarea(self):
         self.tree_tareas.selection_remove(self.tree_tareas.selection())
         self.entry_tarea_titulo.delete(0, tk.END)
+        self.entry_tarea_descripcion.delete(0, tk.END)
         self.combo_tarea_evento.set("Seleccione un evento")
         self.combo_tarea_responsable.set("Seleccione un usuario")
         self.combo_tarea_prioridad.set("Media")
         self.combo_tarea_estado.set("Pendiente")
         hoy = datetime.now()
-        self.establecer_fecha(self.fecha_tar_limite, hoy)
-        self.hora_tar_limite.delete(0, tk.END); self.hora_tar_limite.insert(0, "17:00")
+        self.establecer_fecha(self.fecha_tarea_limite, hoy)
+        self.hora_tarea_limite.delete(0, tk.END); self.hora_tarea_limite.insert(0, "17:00")
+
+        self.limpiar_form_tarea()
 
     def agregar_tarea(self):
         titulo = self.entry_tarea_titulo.get().strip()
-        evento = self.combo_tarea_evento.get()
-        responsable = self.combo_tarea_responsable.get()
+        descripcion = self.entry_tarea_descripcion.get().strip() or None
+        evento = self.combo_tarea_evento.get(self.combo_tarea_evento.get())
+        responsable = self.usuarios_combo.get(self.combo_tarea_responsable.get())
         prioridad = self.combo_tarea_prioridad.get()
         estado = self.combo_tarea_estado.get()
-        fecha_limite = self.fecha_limite.get_date()
-        hora_limite = self.hora_limite.get()
-
-        if not titulo or not evento or not responsable or not prioridad or not estado or not fecha_limite or not hora_limite:
-            return messagebox.showwarning("Campos incompletos", "Indica todos los campos de la tarea.")
-
-            return messagebox.showwarning("Campos incompletos", "Indica todos los campos de la ubicación.")
+        if not titulo or evento is None or responsable is None:
+            return messagebox.showwarning("Campos incompletos", "Completa título, evento y responsable.")
         try:
-            self.ejecutar_consulta(
-                "INSERT INTO ubicaciones (nombre, ciudad, direccion, capacidad) VALUES (%s, %s, %s, %s)",
-                (nombre, ciudad, direccion, int(capacidad))
+            fecha_limite = datetime.strptime(
+                f"{self.obtener_fecha(self.fecha_limite)} {self.hora_limite.get().strip()}",
+                "%Y-%m-%d %H:%M"
             )
-            self.limpiar_form_ubicacion(); self.actualizar_todas_las_tablas()
-            messagebox.showinfo("Éxito", "Ubicación registrada correctamente.")
+            self.ejecutar_consulta(
+                """INSERT INTO tareas (titulo, descripcion, prioridad, estado, fecha_limite,
+                   id_usuario_responsable, id_evento) VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+                (titulo, descripcion, prioridad, estado, fecha_limite, responsable, evento)
+            )
+            self.limpiar_form_tarea(); self.actualizar_todas_las_tablas()
+            messagebox.showinfo("Éxito", "Tarea creada correctamente.")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
