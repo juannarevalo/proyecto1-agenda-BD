@@ -118,7 +118,7 @@ ALTER TABLE eventos add id_ubicacion INT REFERENCES ubicaciones(id_ubicacion) ON
 CREATE OR REPLACE FUNCTION evitar_traslape()
 RETURNS TRIGGER AS $$
 BEGIN
-If EXISTS (SELECT 1 FROM eventos 
+If EXISTS (SELECT 1 FROM prototipo.eventos 
     WHERE id_ubicacion = NEW.id_ubicacion
     AND fecha_inicio < NEW.fecha_fin 
     AND fecha_fin > NEW.fecha_inicio
