@@ -201,3 +201,4 @@ VALUES ('Ocupado');
 
 INSERT INTO catalogo_tipo_disponibilidad(nombre)
 VALUES ('No disponible');
+

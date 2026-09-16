@@ -1213,6 +1213,13 @@ class AppAgenda(ctk.CTk):
         if not hora_inicio or not hora_fin:
             return messagebox.showwarning("Campos incompletos", "Indica hora inicio y hora fin de la consulta.")
         try:
+            h_ini = datetime.strptime(hora_inicio, "%H:%M")
+            h_fin = datetime.strptime(hora_fin, "%H:%M")
+        except ValueError:
+            return messagebox.showwarning("Formato inválido", "Las horas deben tener formato HH:MM, por ejemplo 14:00.")
+        if h_fin <= h_ini:
+            return messagebox.showwarning("Rango inválido", "La hora de fin debe ser posterior a la hora de inicio.")
+        try:
             fecha = self.obtener_fecha(self.fecha_consulta_disp)
             rows = self.ejecutar_consulta("""
                 SELECT usuarios.nombre, usuarios.apellido,
