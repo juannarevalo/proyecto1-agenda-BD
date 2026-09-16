@@ -609,7 +609,7 @@ class AppAgenda(ctk.CTk):
             for row in rows:
                 usuario = f"{row[2]} {row[3]} — #{row[1]}"
                 categoria = f"{row[5]} — #{row[4]}"
-                ubicacion = f"{row[9]} — #{row[10]}" if row[9] else "Sin ubicación", # Se agrega la ubicacion a la tabla de eventos, si no tiene ubicacion asignada se mostrara "Sin ubicación"
+                ubicacion = f"{row[9]} — #{row[10]}" if row[9] else "Sin ubicación" # Se agrega la ubicacion a la tabla de eventos, si no tiene ubicacion asignada se mostrara "Sin ubicación"
                 inicio = row[7].strftime("%Y-%m-%d %H:%M") if hasattr(row[7], "strftime") else row[7]
                 fin = row[8].strftime("%Y-%m-%d %H:%M") if hasattr(row[8], "strftime") else row[8]
                 self.tree_eventos.insert("", "end", values=(row[0], usuario, categoria, ubicacion, row[6], inicio, fin))
