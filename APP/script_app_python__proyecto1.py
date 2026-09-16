@@ -1170,39 +1170,39 @@ class AppAgenda(ctk.CTk):
         except Exception as e:
             messagebox.showerror("No se pudo eliminar", str(e))
 
-    def cargar_datos_tareas(self):
-            try:
-                rows = self.ejecutar_consulta("""
-                    SELECT t.id_tarea, t.titulo, e.titulo, u.nombre, u.apellido,
-                           t.prioridad, t.estado, t.fecha_limite, e.id_evento, u.id_usuario
-                    FROM tareas t
-                    JOIN eventos e ON e.id_evento = t.id_evento
-                    JOIN usuarios u ON u.id_usuario = t.id_usuario_responsable
-                    ORDER BY t.fecha_limite DESC
-                """, fetch=True)
-                for item in self.tree_tareas.get_children():
-                    self.tree_tareas.delete(item)
-                for row in rows:
-                    fecha = row[7].strftime("%Y-%m-%d %H:%M") if hasattr(row[7], "strftime") else row[7]
-                    evento_etiqueta = f"{row[2]} — #{row[8]}"
-                    usuario_etiqueta = f"{row[3]} {row[4]} — #{row[9]}"
-                    self.tree_tareas.insert("", "end", values=(
-                        row[0], row[1], evento_etiqueta, usuario_etiqueta, row[5], row[6], fecha
-                ))
-            # Actualizar combo de eventos
-                ev_rows = self.ejecutar_consulta("SELECT id_evento, titulo FROM eventos ORDER BY titulo", fetch=True)
-                self.eventos_combo = {}
-                for eid, titulo in ev_rows: #arma los diccionarios para que el combo box de eventos funcione correctamente
-                    etiqueta = f"{titulo} — #{eid}"
-                    self.eventos_combo[etiqueta] = eid
-                    valores_ev = ["Seleccione un evento"] + list(self.eventos_combo.keys())
-                    self.combo_tarea_evento.configure(values=valores_ev)
-                    valores_u = ["Seleccione un usuario"] + list(self.usuarios_combo.keys())
-                    self.combo_tarea_responsable.configure(values=valores_u)
-            except Exception as e:
-                print(f"Error cargando tareas: {e}")
-
+    def cargar_datos_disponibilidad(self):
     
+        try:
+            rows = self.ejecutar_consulta("""
+                SELECT d.id_disponibilidad, u.nombre, u.apellido, u.id_usuario,
+                       d.fecha_correspondiente, d.hora_inicio, d.hora_fin, t.nombre
+                FROM disponibilidades d
+                JOIN usuarios u ON u.id_usuario = d.id_usuario
+                JOIN catalogo_tipo_disponibilidad t ON t.id_tipo = d.id_tipo
+                ORDER BY d.fecha_correspondiente DESC, d.hora_inicio
+            """, fetch=True)
+            for item in self.tree_disponibilidades.get_children():
+                self.tree_disponibilidades.delete(item)
+            for row in rows:
+                fecha = row[4].strftime("%Y-%m-%d") if hasattr(row[4], "strftime") else row[4]
+                usuario_etiqueta = f"{row[1]} {row[2]} — #{row[3]}"
+                self.tree_disponibilidades.insert("", "end", values=(
+                    row[0], usuario_etiqueta, fecha, row[5], row[6], row[7]
+                )) 
+
+            # Carga el combo de usuarios al dropdown de Seleccion de usuarios
+            valores_u = ["Seleccione un usuario"] + list(self.usuarios_combo.keys())
+            self.combo_disp_usuario.configure(values=valores_u)
+
+            # Carga el combo de tipos de disponibilidad al dropdown de Seleccion de tipos
+            tipos_rows = self.ejecutar_consulta("SELECT id_tipo, nombre FROM catalogo_tipo_disponibilidad ORDER BY nombre", fetch=True)
+            self.tipos_disp_combo = {}
+            for tid, nombre in tipos_rows:
+                self.tipos_disp_combo[nombre] = tid
+            valores_t = ["Seleccione un tipo"] + list(self.tipos_disp_combo.keys())
+            self.combo_disp_tipo.configure(values=valores_t)
+        except Exception as e:
+            print(f"Error cargando disponibilidades: {e}")
            
         
 
