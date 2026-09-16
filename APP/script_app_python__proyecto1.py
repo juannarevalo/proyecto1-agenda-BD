@@ -985,7 +985,7 @@ class AppAgenda(ctk.CTk):
             if not rows:
                 messagebox.showinfo("Tareas vencidas", "No hay tareas vencidas.")
                 return
-            texto = "Tareas Vencidas por usuario\n\n"
+            texto = "Tareas Vencidas\n\n"
             for row in rows:
                 fecha = row[4].strftime("%Y-%m-%d %H:%M") if hasattr(row[4], "strftime") else row[4]
                 texto += f"• {row[0]} (Evento: {row[1]})\n  Responsable: {row[2]} {row[3]} | Vencía: {fecha} | Estado: {row[5]}\n\n"
