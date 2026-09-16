@@ -1087,7 +1087,12 @@ class AppAgenda(ctk.CTk):
         ctk.CTkButton(form, text="🔍 Buscar usuarios disponibles", command=self.consultar_disponibilidad, fg_color="#2d6a4f", hover_color="#1b4332").pack(fill="x", padx=10, pady=(10, 5))
 
         self.limpiar_form_disponibilidad()
-        
+
+    def disponibilidad_seleccionada_id(self):
+        sel = self.tree_disponibilidades.selection()
+        return self.tree_disponibilidades.item(sel[0])["values"][0] if sel else None
+    
+
 
 
     
