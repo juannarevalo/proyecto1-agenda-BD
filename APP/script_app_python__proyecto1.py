@@ -180,7 +180,7 @@ class AppAgenda(ctk.CTk):
         self.configurar_pestana_eventos()
         self.configurar_pestana_ubicaciones()
         self.configurar_pestana_tareas()
-        #self.configurar_pestana_disponibilidad()
+        self.configurar_pestana_disponibilidad()
         self.seleccionar_modulo("Usuarios")
 
     def al_cambiar_pestana(self):
@@ -1203,9 +1203,50 @@ class AppAgenda(ctk.CTk):
             self.combo_disp_tipo.configure(values=valores_t)
         except Exception as e:
             print(f"Error cargando disponibilidades: {e}")
-           
-        
 
+    def consultar_disponibilidad(self):
+        hora_inicio = self.entry_consulta_hora_inicio.get().strip()
+        hora_fin = self.entry_consulta_hora_fin.get().strip()
+        if not hora_inicio or not hora_fin:
+            return messagebox.showwarning("Campos incompletos", "Indica hora inicio y hora fin de la consulta.")
+        try:
+            fecha = self.obtener_fecha(self.fecha_consulta_disp)
+            rows = self.ejecutar_consulta("""
+                SELECT usuarios.nombre, usuarios.apellido,
+                       disponibilidades.hora_inicio, disponibilidades.hora_fin
+                FROM disponibilidades
+                JOIN usuarios ON disponibilidades.id_usuario = usuarios.id_usuario
+                JOIN catalogo_tipo_disponibilidad ON disponibilidades.id_tipo = catalogo_tipo_disponibilidad.id_tipo
+                WHERE fecha_correspondiente = %s
+                  AND catalogo_tipo_disponibilidad.nombre = 'Disponible'
+                  AND hora_inicio <= %s
+                  AND hora_fin >= %s
+                  AND usuarios.id_usuario NOT IN (
+                      SELECT id_usuario_propietario FROM eventos
+                      WHERE fecha_inicio::DATE = %s
+                        AND fecha_inicio::TIME < %s
+                        AND fecha_fin::TIME > %s
+                  )
+                  AND usuarios.id_usuario NOT IN (
+                      SELECT id_invitado FROM participaciones
+                      JOIN eventos ON participaciones.id_evento = eventos.id_evento
+                      WHERE fecha_inicio::DATE = %s
+                        AND fecha_inicio::TIME < %s
+                        AND fecha_fin::TIME > %s
+                        AND estado_confirmacion = 'aceptado'
+                  )
+            """, (fecha, hora_inicio, hora_fin,
+                  fecha, hora_fin, hora_inicio,
+                  fecha, hora_fin, hora_inicio), fetch=True)
+            if not rows:
+                return messagebox.showinfo("Consulta", f"No hay usuarios disponibles el {fecha} de {hora_inicio} a {hora_fin}.")
+            texto = f"🔍 USUARIOS DISPONIBLES\n{fecha} de {hora_inicio} a {hora_fin}\n\n"
+            for row in rows:
+                texto += f"✅ {row[0]} {row[1]} (disponible de {row[2]} a {row[3]})\n"
+            messagebox.showinfo("Usuarios disponibles", texto)
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+           
     
     # -------------------- REFRESCO GENERAL --------------------
 
@@ -1215,7 +1256,7 @@ class AppAgenda(ctk.CTk):
         self.cargar_datos_ubicaciones() ## Se incluyeron las nuevas funciones para recargar datos
         self.cargar_datos_eventos()
         self.cargar_datos_tareas()
-        #self.cargar_datos_disponibilidad()
+        self.cargar_datos_disponibilidad()
 
 
 if __name__ == "__main__":
