@@ -1073,7 +1073,21 @@ class AppAgenda(ctk.CTk):
         ctk.CTkButton(form, text="🧹 Nueva / Limpiar", command=self.limpiar_form_disponibilidad, fg_color="gray").pack(fill="x", padx=10, pady=5)
         ctk.CTkButton(form, text="🗑️ Eliminar seleccionada", command=self.eliminar_disponibilidad, fg_color="#b33939", hover_color="#8f2d2d").pack(fill="x", padx=10, pady=5)
 
+    # Boton para la consulta de usuarios disponibles
+        ctk.CTkLabel(form, text="CONSULTA DE USUARIOS DISPONIBLES", font=ctk.CTkFont(size=12, weight="bold")).pack(pady=(20, 5))
+        ctk.CTkLabel(form, text="Fecha a consultar").pack(anchor="w", padx=10, pady=(5, 2))
+        self.fecha_consulta_disp = self.crear_selector_fecha(form)
+        self.fecha_consulta_disp.pack(fill="x", padx=10, pady=4)
+        ctk.CTkLabel(form, text="Hora inicio (HH:MM)").pack(anchor="w", padx=10, pady=(5, 2))
+        self.entry_consulta_hora_inicio = ctk.CTkEntry(form, placeholder_text="14:00")
+        self.entry_consulta_hora_inicio.pack(fill="x", padx=10, pady=4)
+        ctk.CTkLabel(form, text="Hora fin (HH:MM)").pack(anchor="w", padx=10, pady=(5, 2))
+        self.entry_consulta_hora_fin = ctk.CTkEntry(form, placeholder_text="16:00")
+        self.entry_consulta_hora_fin.pack(fill="x", padx=10, pady=4)
+        ctk.CTkButton(form, text="🔍 Buscar usuarios disponibles", command=self.consultar_disponibilidad, fg_color="#2d6a4f", hover_color="#1b4332").pack(fill="x", padx=10, pady=(10, 5))
 
+        self.limpiar_form_disponibilidad()
+        
 
 
     
