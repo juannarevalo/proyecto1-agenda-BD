@@ -1116,6 +1116,25 @@ class AppAgenda(ctk.CTk):
         self.entry_disp_hora_fin.delete(0, tk.END); self.entry_disp_hora_fin.insert(0, "12:00")
         self.combo_disp_tipo.set("Seleccione un tipo")
 
+    def agregar_disponibilidad(self):
+        usuario = self.usuarios_combo.get(self.combo_disp_usuario.get())
+        tipo = self.tipos_disp_combo.get(self.combo_disp_tipo.get())
+        hora_inicio = self.entry_disp_hora_inicio.get().strip()
+        hora_fin = self.entry_disp_hora_fin.get().strip()
+        if usuario is None or tipo is None or not hora_inicio or not hora_fin:
+            return messagebox.showwarning("Campos incompletos", "Completa todos los campos.")
+        try:
+            fecha = self.obtener_fecha(self.fecha_disp)
+            self.ejecutar_consulta(
+                """INSERT INTO disponibilidades (fecha_correspondiente, hora_inicio, hora_fin, id_tipo, id_usuario)
+                   VALUES (%s, %s, %s, %s, %s)""",
+                (fecha, hora_inicio, hora_fin, tipo, usuario)
+            )
+            self.limpiar_form_disponibilidad(); self.actualizar_todas_las_tablas()
+            messagebox.showinfo("Éxito", "Disponibilidad registrada correctamente.")
+        except Exception as e:
+            messagebox.showerror("Error", str(e)) 
+
     
 
 
