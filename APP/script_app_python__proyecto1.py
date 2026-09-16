@@ -1133,11 +1133,78 @@ class AppAgenda(ctk.CTk):
             self.limpiar_form_disponibilidad(); self.actualizar_todas_las_tablas()
             messagebox.showinfo("Éxito", "Disponibilidad registrada correctamente.")
         except Exception as e:
-            messagebox.showerror("Error", str(e)) 
+            messagebox.showerror("Error", str(e))
+
+    def actualizar_disponibilidad(self):
+        did = self.disponibilidad_seleccionada_id()
+        if did is None:
+            return messagebox.showwarning("Selección requerida", "Selecciona una disponibilidad.")
+        usuario = self.usuarios_combo.get(self.combo_disp_usuario.get())
+        tipo = self.tipos_disp_combo.get(self.combo_disp_tipo.get())
+        hora_inicio = self.entry_disp_hora_inicio.get().strip()
+        hora_fin = self.entry_disp_hora_fin.get().strip()
+        if usuario is None or tipo is None or not hora_inicio or not hora_fin:
+            return messagebox.showwarning("Campos incompletos", "Completa todos los campos.")
+        try:
+            fecha = self.obtener_fecha(self.fecha_disp)
+            self.ejecutar_consulta(
+                """UPDATE disponibilidades SET fecha_correspondiente=%s, hora_inicio=%s, hora_fin=%s,
+                   id_tipo=%s, id_usuario=%s WHERE id_disponibilidad=%s""",
+                (fecha, hora_inicio, hora_fin, tipo, usuario, did)
+            )
+            self.actualizar_todas_las_tablas()
+            messagebox.showinfo("Éxito", "Disponibilidad actualizada.")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def eliminar_disponibilidad(self):
+        did = self.disponibilidad_seleccionada_id()
+        if did is None:
+            return messagebox.showwarning("Selección requerida", "Selecciona una disponibilidad.")
+        if not messagebox.askyesno("Confirmar", "¿Eliminar la disponibilidad seleccionada?"):
+            return
+        try:
+            self.ejecutar_consulta("DELETE FROM disponibilidades WHERE id_disponibilidad=%s", (did,))
+            self.limpiar_form_disponibilidad(); self.actualizar_todas_las_tablas()
+            messagebox.showinfo("Eliminado", "Disponibilidad eliminada.")
+        except Exception as e:
+            messagebox.showerror("No se pudo eliminar", str(e))
+
+    def cargar_datos_tareas(self):
+            try:
+                rows = self.ejecutar_consulta("""
+                    SELECT t.id_tarea, t.titulo, e.titulo, u.nombre, u.apellido,
+                           t.prioridad, t.estado, t.fecha_limite, e.id_evento, u.id_usuario
+                    FROM tareas t
+                    JOIN eventos e ON e.id_evento = t.id_evento
+                    JOIN usuarios u ON u.id_usuario = t.id_usuario_responsable
+                    ORDER BY t.fecha_limite DESC
+                """, fetch=True)
+                for item in self.tree_tareas.get_children():
+                    self.tree_tareas.delete(item)
+                for row in rows:
+                    fecha = row[7].strftime("%Y-%m-%d %H:%M") if hasattr(row[7], "strftime") else row[7]
+                    evento_etiqueta = f"{row[2]} — #{row[8]}"
+                    usuario_etiqueta = f"{row[3]} {row[4]} — #{row[9]}"
+                    self.tree_tareas.insert("", "end", values=(
+                        row[0], row[1], evento_etiqueta, usuario_etiqueta, row[5], row[6], fecha
+                ))
+            # Actualizar combo de eventos
+                ev_rows = self.ejecutar_consulta("SELECT id_evento, titulo FROM eventos ORDER BY titulo", fetch=True)
+                self.eventos_combo = {}
+                for eid, titulo in ev_rows: #arma los diccionarios para que el combo box de eventos funcione correctamente
+                    etiqueta = f"{titulo} — #{eid}"
+                    self.eventos_combo[etiqueta] = eid
+                    valores_ev = ["Seleccione un evento"] + list(self.eventos_combo.keys())
+                    self.combo_tarea_evento.configure(values=valores_ev)
+                    valores_u = ["Seleccione un usuario"] + list(self.usuarios_combo.keys())
+                    self.combo_tarea_responsable.configure(values=valores_u)
+            except Exception as e:
+                print(f"Error cargando tareas: {e}")
 
     
-
-
+           
+        
 
     
     # -------------------- REFRESCO GENERAL --------------------
