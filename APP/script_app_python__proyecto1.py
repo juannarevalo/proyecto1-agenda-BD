@@ -1087,10 +1087,25 @@ class AppAgenda(ctk.CTk):
         ctk.CTkButton(form, text="🔍 Buscar usuarios disponibles", command=self.consultar_disponibilidad, fg_color="#2d6a4f", hover_color="#1b4332").pack(fill="x", padx=10, pady=(10, 5))
 
         self.limpiar_form_disponibilidad()
-
+        
+    #definicion de funciones CRUD para DISPONIBILIDAD
     def disponibilidad_seleccionada_id(self):
         sel = self.tree_disponibilidades.selection()
         return self.tree_disponibilidades.item(sel[0])["values"][0] if sel else None
+
+    def cargar_disponibilidad_seleccionada(self, _=None):
+        sel = self.tree_disponibilidades.selection()
+        if not sel:
+            return
+        vals = self.tree_disponibilidades.item(sel[0])["values"]
+        self.combo_disp_usuario.set(vals[1])
+        try:
+            self.establecer_fecha(self.fecha_disp, datetime.strptime(str(vals[2]), "%Y-%m-%d"))
+        except ValueError:
+            pass
+        self.entry_disp_hora_inicio.delete(0, tk.END); self.entry_disp_hora_inicio.insert(0, vals[3])
+        self.entry_disp_hora_fin.delete(0, tk.END); self.entry_disp_hora_fin.insert(0, vals[4])
+        self.combo_disp_tipo.set(vals[5])
     
 
 
