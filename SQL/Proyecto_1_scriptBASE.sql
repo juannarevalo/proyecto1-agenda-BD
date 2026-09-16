@@ -240,3 +240,5 @@ INSERT INTO disponibilidades (fecha_correspondiente, hora_inicio, hora_fin, id_t
 ('2026-10-06', '13:00', '17:00', 1, 2),
 ('2026-10-06', '08:00', '12:00', 2, 3),
 ('2026-10-07', '09:00', '15:00', 1, 4);
+
+-- comentario para commit final, PROYECTO TERMINADOOO!!
