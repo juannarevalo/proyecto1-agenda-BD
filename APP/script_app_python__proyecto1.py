@@ -941,7 +941,7 @@ class AppAgenda(ctk.CTk):
                 "%Y-%m-%d %H:%M"
             )
             self.ejecutar_consulta(
-                "UPDATE tareas SET titulo=%s, descripcion=%s, prioridad=%s, estado=%s, fecha_limite=%s WHERE id_tarea=%s",
+                "UPDATE tareas SET titulo=%s, descripcion=%s, prioridad=%s, estado=%s, fecha_limite=%s, id_usuario_responsable=%s, id_evento=%s WHERE id_tarea=%s",
                 (titulo, descripcion, prioridad, estado, fecha_limite, responsable, evento, tid)
             )
             self.actualizar_todas_las_tablas()

@@ -111,8 +111,8 @@ CREATE TABLE ubicaciones (
 	ciudad varchar(50) NOT NULL, 
 	direccion varchar(200) NOT NULL,
 	capacidad int NOT NULL CHECK (capacidad>0)
-)
-ALTER TABLE eventos add id_ubicacion INT REFERENCES ubicaciones(id_ubicacion) 
+);
+ALTER TABLE eventos add id_ubicacion INT REFERENCES ubicaciones(id_ubicacion) ON DELETE SET NULL;
 
 -- RF-09: Evitar traslape de eventos en la misma ubicación
 CREATE OR REPLACE FUNCTION evitar_traslape()
@@ -154,8 +154,8 @@ CREATE TABLE tareas(
 		CHECK (estado IN ('Pendiente', 'Completada', 'En progreso', 'Cancelada')),
 	fecha_limite TIMESTAMP NOT NULL,
 	id_usuario_responsable INT NOT NULL REFERENCES usuarios(id_usuario),
-	id_evento INT NOT NULL REFERENCES eventos(id_evento)
-) 
+	id_evento INT NOT NULL REFERENCES eventos(id_evento) ON DELETE CASCADE
+);
 --RF-16 Y RF-17 VIEW de tareas pendientes (Piden cuantas, no cuales)
 CREATE VIEW vista_tareas_pendientes AS
 SELECT COUNT(estado) AS cantidad, usuarios.nombre, usuarios.apellido, estado 
@@ -187,7 +187,7 @@ CREATE TABLE disponibilidades (
 	hora_inicio TIME NOT NULL,
 	hora_fin TIME NOT NULL,
 	id_tipo INT NOT NULL REFERENCES catalogo_tipo_disponibilidad(id_tipo),
-	id_usuario INT NOT NULL REFERENCES usuarios(id_usuario),
+	id_usuario INT NOT NULL REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
 
 	CONSTRAINT check_hora CHECK (hora_inicio<hora_fin)
 	
