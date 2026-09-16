@@ -811,8 +811,8 @@ class AppAgenda(ctk.CTk):
                 form.grid(row=0, column=1, sticky="nsew")
         
                 self.tree_tareas = self.crear_treeview(
-                    tabla_frame, ("ID", "Titulo", "Evento", "Responsable", "Prioridad", "Estado", "Fecha límite"),
-                    (70, 160, 160, 160, 80, 80, 120)
+                    tabla_frame, ("ID", "Titulo", "Evento", "Responsable", "Prioridad", "Estado", "Fecha límite", "Descripción"),
+                    (70, 160, 160, 160, 80, 80, 120, 200)
                 )
                 self.tree_tareas.bind("<<TreeviewSelect>>", self.cargar_tarea_seleccionada)
         
@@ -875,10 +875,12 @@ class AppAgenda(ctk.CTk):
             return
         vals = self.tree_tareas.item(sel[0])["values"]
         self.entry_tarea_titulo.delete(0, tk.END); self.entry_tarea_titulo.insert(0, vals[1])
+        self.entry_tarea_descripcion.delete(0,tk.END); self.entry_tarea_descripcion.insert(0, vals[7])
         self.combo_tarea_evento.set(vals[2])
         self.combo_tarea_responsable.set(vals[3])
         self.combo_tarea_prioridad.set(vals[4])
         self.combo_tarea_estado.set(vals[5])
+
         try:
             fecha_limite = datetime.strptime(str(vals[6]), "%Y-%m-%d %H:%M")
             self.establecer_fecha(self.fecha_limite, fecha_limite)
@@ -991,11 +993,11 @@ class AppAgenda(ctk.CTk):
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    def cargar_datos_tareas(self):
+    def cargar_datos_tareas(self): 
         try:
             rows = self.ejecutar_consulta("""
                 SELECT t.id_tarea, t.titulo, e.titulo, u.nombre, u.apellido,
-                       t.prioridad, t.estado, t.fecha_limite, e.id_evento, u.id_usuario
+                       t.prioridad, t.estado, t.fecha_limite, e.id_evento, u.id_usuario, t.descripcion
                 FROM tareas t
                 JOIN eventos e ON e.id_evento = t.id_evento
                 JOIN usuarios u ON u.id_usuario = t.id_usuario_responsable
@@ -1007,8 +1009,9 @@ class AppAgenda(ctk.CTk):
                 fecha = row[7].strftime("%Y-%m-%d %H:%M") if hasattr(row[7], "strftime") else row[7]
                 evento_etiqueta = f"{row[2]} — #{row[8]}"
                 usuario_etiqueta = f"{row[3]} {row[4]} — #{row[9]}"
+                descripcion = row[10] if row[10] else ""
                 self.tree_tareas.insert("", "end", values=(
-                    row[0], row[1], evento_etiqueta, usuario_etiqueta, row[5], row[6], fecha
+                    row[0], row[1], evento_etiqueta, usuario_etiqueta, row[5], row[6], fecha, descripcion
             ))
         # Actualizar combo de eventos
             ev_rows = self.ejecutar_consulta("SELECT id_evento, titulo FROM eventos ORDER BY titulo", fetch=True)
