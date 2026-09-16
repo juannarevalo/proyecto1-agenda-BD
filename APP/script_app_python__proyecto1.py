@@ -838,7 +838,7 @@ class AppAgenda(ctk.CTk):
                 self.combo_tarea_prioridad.pack(fill="x", padx=10, pady=4)
 
                 ctk.CTkLabel(form, text="Estado").pack(anchor="w", padx=10, pady=(8, 2))
-                self.combo_tarea_estado = ctk.CTkComboBox(form, values=["Pendiente", "En progreso", "Completada"], state="readonly")
+                self.combo_tarea_estado = ctk.CTkComboBox(form, values=["Pendiente", "En progreso", "Completada", "Cancelada"], state="readonly")
                 self.combo_tarea_estado.set("Pendiente")
                 self.combo_tarea_estado.pack(fill="x", padx=10, pady=4)
 
