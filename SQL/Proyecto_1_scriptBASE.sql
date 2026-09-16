@@ -136,11 +136,11 @@ FOR EACH ROW EXECUTE FUNCTION evitar_traslape();
 
 --RF-10: Ubicaciones más utilizadas
 CREATE VIEW ubicaciones_mas_utilizadas AS
-SELECT COUNT(id_evento), ubicaciones.nombre
-FROM eventos
-JOIN ubicaciones ON eventos.id_ubicacion = ubicaciones.id_ubicacion
-Group by ubicaciones.nombre
-ORDER BY Count(id_evento) DESC;
+SELECT COUNT(eventos.id_evento) AS total_eventos, ubicaciones.nombre
+FROM ubicaciones
+LEFT JOIN eventos ON eventos.id_ubicacion = ubicaciones.id_ubicacion
+GROUP BY ubicaciones.nombre
+ORDER BY total_eventos DESC;
 
 -- MODULO 2 TAREAS ASOCIADAS A EVENTOS
 CREATE TABLE tareas(
