@@ -202,3 +202,41 @@ VALUES ('Ocupado');
 INSERT INTO catalogo_tipo_disponibilidad(nombre)
 VALUES ('No disponible');
 
+-- INSERTS de datos para tener cosas cargadas en la aplicacion apenas se abra
+SET search_path TO prototipo, public;
+
+INSERT INTO usuarios (nombre, apellido) VALUES
+('Juan Andrés', 'Arévalo'), ('Luis', 'Arancel'),
+('María', 'Rodríguez'), ('Carlos', 'Jiménez');
+
+INSERT INTO categorias (nombre, id_categoria_padre) VALUES
+('Trabajo', NULL), ('Personal', NULL);
+INSERT INTO categorias (nombre, id_categoria_padre) VALUES
+('Reuniones de proyecto', 1), ('Cumpleaños', 2);
+
+INSERT INTO ubicaciones (nombre, ciudad, direccion, capacidad) VALUES
+('Auditorio Principal', 'San José', 'Calle 1, Avenida 2', 50),
+('Sala de Conferencias B', 'Cartago', 'El Guarco, edificio central', 20),
+('Casa Club', 'San José', 'Villas de Ayarco', 60),
+('Rancho Redondo', 'Heredia', 'Santo Domingo', 200);
+
+INSERT INTO eventos (id_usuario_propietario, id_categoria, titulo, descripcion, fecha_inicio, fecha_fin, id_ubicacion) VALUES
+(1, 3, 'Reunión de arranque', 'Definición de alcance', '2026-10-05 09:00', '2026-10-05 11:00', 1),
+(2, 3, 'Revisión de avance', NULL, '2026-10-05 14:00', '2026-10-05 16:00', 1),
+(1, 4, 'Cumpleaños de Mamá', 'Almuerzo familiar', '2026-10-10 12:00', '2026-10-10 17:00', 3),
+(3, 1, 'Capacitación interna', NULL, '2026-10-06 08:00', '2026-10-06 12:00', 2),
+(4, 2, 'Llamada con proveedor', 'Reunión virtual', '2026-10-06 10:00', '2026-10-06 11:00', NULL);
+
+INSERT INTO tareas (titulo, descripcion, prioridad, estado, fecha_limite, id_usuario_responsable, id_evento) VALUES
+('Preparar presentación', 'Cronograma y responsables', 'Alta', 'Pendiente', '2026-10-04 17:00', 1, 1),
+('Reservar equipo de audio', NULL, 'Media', 'En progreso', '2026-10-03 12:00', 2, 1),
+('Enviar minuta', NULL, 'Alta', 'Pendiente', '2026-08-30 17:00', 1, 2),
+('Comprar decoración', 'Globos y mantel', 'Baja', 'Completada', '2026-09-10 10:00', 3, 3),
+('Confirmar asistentes', NULL, 'Media', 'Cancelada', '2026-09-05 09:00', 4, 3),
+('Preparar material', NULL, 'Alta', 'Pendiente', '2026-09-01 08:00', 3, 4);
+
+INSERT INTO disponibilidades (fecha_correspondiente, hora_inicio, hora_fin, id_tipo, id_usuario) VALUES
+('2026-10-06', '08:00', '12:00', 1, 1),
+('2026-10-06', '13:00', '17:00', 1, 2),
+('2026-10-06', '08:00', '12:00', 2, 3),
+('2026-10-07', '09:00', '15:00', 1, 4);
